@@ -1,0 +1,14 @@
+---
+import { getCollection } from "astro:content";
+interface Props { current?: string }
+const { current } = Astro.props;
+const docs = (await getCollection("docs")).sort((a, b) => a.data.order - b.data.order);
+---
+<nav class="docs-nav" aria-label="Docs">
+  <p class="label"><a href="/docs/">All docs</a></p>
+  <ul>
+    {docs.map((d) => (
+      <li><a href={`/docs/${d.id}/`} aria-current={d.id === current ? "page" : undefined}>{d.data.title}</a></li>
+    ))}
+  </ul>
+</nav>

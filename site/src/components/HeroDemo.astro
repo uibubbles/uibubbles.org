@@ -1,0 +1,97 @@
+---
+// Dependency-free illustration: a chat where a Calendar Bubble pops, then a Contacts Bubble,
+// and the two glue along a shared wall. Pure HTML and CSS keyframes, one 18s loop.
+---
+<figure class="demo">
+  <div class="stage" aria-hidden="true">
+    <div class="host">
+      <div class="host-bar"><i></i><i></i><i></i><span>Chat, a host surface</span></div>
+      <div class="thread">
+        <p class="msg m1">What's on tomorrow?</p>
+        <div class="pair">
+          <div class="bub cal"><div class="in">
+            <h4>Tomorrow</h4>
+            <ul>
+              <li><b>09:00</b> Stand-up</li>
+              <li class="ev"><b>12:30</b> Lunch with Ana</li>
+              <li><b>16:00</b> Dentist</li>
+            </ul>
+          </div></div>
+          <div class="bub con"><div class="in">
+            <h4>Contacts</h4>
+            <ul>
+              <li class="pp ana"><span class="av">A</span>Ana</li>
+              <li class="pp"><span class="av b">B</span>Ben</li>
+              <li class="pp"><span class="av c">M</span>Mira</li>
+            </ul>
+          </div></div>
+          <span class="wall"></span>
+          <span class="chip">event.selected</span>
+        </div>
+        <p class="msg m2">Who am I meeting?</p>
+      </div>
+    </div>
+  </div>
+  <figcaption>
+    Illustration, not a live demo. A Calendar Bubble pops up, then a Contacts Bubble, and the two glue along a shared wall. Live demo coming.
+  </figcaption>
+</figure>
+
+<style>
+  .demo { margin: 0; }
+  .demo figcaption { margin-top: 0.9rem; font-size: var(--step--1); color: var(--ink-2); max-width: 46ch; }
+  .stage { animation: stage 18s infinite both; }
+  .host { background: var(--surface); border: 1px solid var(--line); border-radius: 26px; padding: 0.8rem 0.9rem 1.1rem; box-shadow: 0 1px 0 var(--line); }
+  .host-bar { display: flex; align-items: center; gap: 0.35rem; font-size: 0.75rem; color: var(--ink-2); padding: 0 0.2rem 0.7rem; }
+  .host-bar i { width: 9px; height: 9px; border-radius: 50%; background: var(--line); }
+  .host-bar span { margin-left: 0.5rem; }
+  .thread { display: grid; gap: 0.8rem; font-size: 0.85rem; }
+  .msg { margin: 0; padding: 0.5rem 0.9rem; border-radius: 18px 18px 4px 18px; background: var(--ink); color: var(--paper); justify-self: end; max-width: 80%; }
+  .m1 { animation: m1 18s infinite both; }
+  .m2 { animation: m2 18s infinite both; }
+
+  .pair { position: relative; display: grid; grid-template-columns: 1fr 1fr; gap: 14px; animation: close 18s infinite both; }
+  .bub { padding: 2px; background: var(--rim); border-radius: 22px; transform-origin: 50% 80%; }
+  .bub .in { background: var(--surface); border-radius: 20px; padding: 0.7rem 0.75rem; height: 100%; min-height: 10.2rem; }
+  .bub h4 { margin: 0 0 0.45rem; font-family: var(--font-display); font-size: 0.95rem; }
+  .bub ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.25rem; }
+  .bub li { padding: 0.25rem 0.4rem; border-radius: 9px; line-height: 1.3; display: flex; gap: 0.4rem; align-items: center; }
+  .cal li b { font-weight: 600; font-size: 0.72rem; color: var(--ink-2); }
+  .av { width: 1.4rem; height: 1.4rem; border-radius: 50%; display: grid; place-items: center; font-size: 0.7rem; font-weight: 600; color: #12283a; background: var(--film-a); flex: none; }
+  .av.b { background: var(--film-d); } .av.c { background: var(--film-c); }
+  .cal { animation: popCal 18s infinite both, calEdge 18s infinite both; }
+  .con { animation: popCon 18s infinite both, conEdge 18s infinite both; }
+  .ev { animation: hl 18s infinite both; }
+  .ana { animation: hl2 18s infinite both; }
+
+  .wall { position: absolute; top: 10px; bottom: 10px; left: 50%; width: 4px; margin-left: -2px; border-radius: 4px; background: linear-gradient(var(--film-a), var(--film-b), var(--film-c), var(--film-d)); animation: wall 18s infinite both; }
+  .chip { position: absolute; top: 46%; left: 50%; transform: translateX(-50%); font-family: var(--font-mono); font-size: 0.66rem; padding: 0.15rem 0.5rem; border-radius: 999px; background: var(--ink); color: var(--paper); white-space: nowrap; animation: chip 18s infinite both; }
+
+  @keyframes stage { 0% { opacity: 0; } 2% { opacity: 1; } 96% { opacity: 1; } 99%, 100% { opacity: 0; } }
+  @keyframes m1 { 0%, 3% { opacity: 0; transform: translateY(8px); } 6%, 100% { opacity: 1; transform: none; } }
+  @keyframes m2 { 0%, 31% { opacity: 0; transform: translateY(8px); } 34%, 100% { opacity: 1; transform: none; } }
+  @keyframes popCal { 0%, 9% { opacity: 0; transform: scale(0.4); } 13% { opacity: 1; transform: scale(1.07); } 16%, 100% { opacity: 1; transform: scale(1); } }
+  @keyframes popCon { 0%, 40% { opacity: 0; transform: scale(0.4); } 44% { opacity: 1; transform: scale(1.07); } 47%, 100% { opacity: 1; transform: scale(1); } }
+  @keyframes close { 0%, 56% { gap: 14px; } 63%, 100% { gap: 0px; } }
+  @keyframes calEdge { 0%, 56% { border-radius: 22px; } 63%, 100% { border-radius: 22px 6px 6px 22px; } }
+  @keyframes conEdge { 0%, 56% { border-radius: 22px; } 63%, 100% { border-radius: 6px 22px 22px 6px; } }
+  @keyframes wall { 0%, 62% { opacity: 0; transform: scaleY(0.2); } 67%, 100% { opacity: 1; transform: scaleY(1); } }
+  @keyframes chip { 0%, 69% { opacity: 0; transform: translateX(-160%); } 72% { opacity: 1; transform: translateX(-160%); } 78% { opacity: 1; transform: translateX(-50%); } 84% { opacity: 1; transform: translateX(60%); } 88%, 100% { opacity: 0; transform: translateX(60%); } }
+  @keyframes hl { 0%, 68% { background: transparent; } 72%, 100% { background: var(--lagoon-soft); } }
+  @keyframes hl2 { 0%, 80% { background: transparent; } 84%, 100% { background: var(--lagoon-soft); } }
+
+  @media (max-width: 420px) {
+    .bub .in { padding: 0.55rem 0.5rem; }
+    .thread { font-size: 0.8rem; }
+    .cal li b { display: block; }
+    .cal li { display: block; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .stage, .m1, .m2, .pair, .cal, .con, .ev, .ana, .wall, .chip { animation: none; }
+    .pair { gap: 0; }
+    .cal { border-radius: 22px 6px 6px 22px; }
+    .con { border-radius: 6px 22px 22px 6px; }
+    .ev, .ana { background: var(--lagoon-soft); }
+    .chip { display: none; }
+  }
+</style>

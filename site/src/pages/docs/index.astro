@@ -1,0 +1,20 @@
+---
+import Base from "../../layouts/Base.astro";
+import DocsNav from "../../components/DocsNav.astro";
+import { getCollection } from "astro:content";
+const docs = (await getCollection("docs")).sort((a, b) => a.data.order - b.data.order);
+---
+<Base title="Docs" description="Draft documentation for UIBubbles: vision, concepts, security, extension ids, prior art, open questions and roadmap.">
+  <div class="wrap docs-layout">
+    <DocsNav />
+    <div class="prose">
+      <h1>Docs</h1>
+      <blockquote><p><strong>Status: draft.</strong> These pages are early and unreviewed.</p></blockquote>
+      <ul class="doc-list">
+        {docs.map((d) => (
+          <li><h2><a href={`/docs/${d.id}/`}>{d.data.title}</a></h2><p>{d.data.description}</p></li>
+        ))}
+      </ul>
+    </div>
+  </div>
+</Base>
