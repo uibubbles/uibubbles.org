@@ -1,0 +1,62 @@
+---
+// Dependency-free illustration of glue: two Bubbles close the gap, their touching corners
+// flatten into a shared wall owned by the host, and a declared event crosses it. One 9s loop.
+---
+<figure class="glue">
+  <div class="pair" aria-hidden="true">
+    <div class="bub cal"><div class="in">
+      <h4>Tomorrow</h4>
+      <ul>
+        <li><b>09:00</b> Stand-up</li>
+        <li class="ev"><b>12:30</b> Lunch</li>
+      </ul>
+    </div></div>
+    <div class="bub con"><div class="in">
+      <h4>Contacts</h4>
+      <ul>
+        <li class="ana"><span class="av">A</span>Ana</li>
+        <li><span class="av b">B</span>Ben</li>
+      </ul>
+    </div></div>
+    <span class="wall"></span>
+    <span class="chip">event.selected</span>
+  </div>
+  <figcaption>Illustration: the two Bubbles glue, and selecting the lunch highlights who is coming. Only the declared <code>event.selected</code> crosses the wall.</figcaption>
+</figure>
+
+<style>
+  .glue { margin: 1.4rem 0; }
+  .glue figcaption { margin-top: 0.7rem; font-size: var(--step--1); color: var(--ink-2); max-width: 52ch; }
+  .pair { position: relative; display: grid; grid-template-columns: 1fr 1fr; gap: 18px; max-width: 30rem; font-size: 0.82rem; animation: close 9s infinite both; }
+  .bub { padding: 2px; background: var(--rim); border-radius: 20px; }
+  .bub .in { background: var(--surface); border-radius: 18px; padding: 0.6rem 0.7rem; height: 100%; }
+  .bub h4 { margin: 0 0 0.4rem; font-family: var(--font-display); font-size: 0.9rem; }
+  .bub ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.2rem; }
+  .bub li { padding: 0.2rem 0.35rem; border-radius: 8px; display: flex; gap: 0.4rem; align-items: center; }
+  .bub li b { font-weight: 600; font-size: 0.7rem; color: var(--ink-2); }
+  .av { width: 1.3rem; height: 1.3rem; border-radius: 50%; display: grid; place-items: center; font-size: 0.66rem; font-weight: 600; color: #12283a; background: var(--film-a); flex: none; }
+  .av.b { background: var(--film-d); }
+  .cal { animation: calEdge 9s infinite both; }
+  .con { animation: conEdge 9s infinite both; }
+  .ev { animation: hl 9s infinite both; }
+  .ana { animation: hl2 9s infinite both; }
+  .wall { position: absolute; top: 10px; bottom: 10px; left: 50%; width: 4px; margin-left: -2px; border-radius: 4px; background: linear-gradient(var(--film-a), var(--film-b), var(--film-c), var(--film-d)); animation: wall 9s infinite both; }
+  .chip { position: absolute; top: 58%; left: 50%; font-family: var(--font-mono); font-size: 0.64rem; padding: 0.15rem 0.5rem; border-radius: 999px; background: var(--ink); color: var(--paper); white-space: nowrap; animation: chip 9s infinite both; }
+
+  @keyframes close { 0%, 12% { gap: 18px; } 26%, 92% { gap: 0px; } 100% { gap: 18px; } }
+  @keyframes calEdge { 0%, 12% { border-radius: 20px; } 26%, 92% { border-radius: 20px 5px 5px 20px; } 100% { border-radius: 20px; } }
+  @keyframes conEdge { 0%, 12% { border-radius: 20px; } 26%, 92% { border-radius: 5px 20px 20px 5px; } 100% { border-radius: 20px; } }
+  @keyframes wall { 0%, 24% { opacity: 0; transform: scaleY(0.2); } 32%, 90% { opacity: 1; transform: scaleY(1); } 96%, 100% { opacity: 0; transform: scaleY(0.2); } }
+  @keyframes hl { 0%, 36% { background: transparent; } 40%, 88% { background: var(--lagoon-soft); } 94%, 100% { background: transparent; } }
+  @keyframes chip { 0%, 40% { opacity: 0; transform: translateX(-160%); } 43% { opacity: 1; transform: translateX(-160%); } 52% { opacity: 1; transform: translateX(-50%); } 60% { opacity: 1; transform: translateX(60%); } 65%, 100% { opacity: 0; transform: translateX(60%); } }
+  @keyframes hl2 { 0%, 58% { background: transparent; } 62%, 88% { background: var(--lagoon-soft); } 94%, 100% { background: transparent; } }
+
+  @media (prefers-reduced-motion: reduce) {
+    .pair, .cal, .con, .ev, .ana, .wall, .chip { animation: none; }
+    .pair { gap: 0; }
+    .cal { border-radius: 20px 5px 5px 20px; }
+    .con { border-radius: 5px 20px 20px 5px; }
+    .ev, .ana { background: var(--lagoon-soft); }
+    .chip { display: none; }
+  }
+</style>

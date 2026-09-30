@@ -62,6 +62,7 @@ snap together and incompatible ones do not. Only declared events cross.
 | **pop** | A Bubble appears, or (popping it) disappears. Dismissing the instance does not delete the underlying resource. |
 | **pin** | Keep the Bubble available on the surface. |
 | **expand** | Grow from inline to panel to fullscreen. |
+| **drag and drop** | Move one item from a Bubble onto another (a contact onto a meeting). The host runs the drag; the source offers a typed item, and only Bubbles that declare they `accept` that type become drop targets. The drop is the consent: the receiver gets exactly that item. Keyboard (pick up, move between targets, drop) and touch (long-press) are required, not optional. |
 | **glue** | Attach touching Bubbles across a wall. By the user (drag), an agent (a glued pair pops) or a Bubble (spawn glued). |
 | **unglue** | Split a cluster. Popping one Bubble leaves the others. |
 | **spawn** | A Bubble asks the host to bring another Bubble into being. |

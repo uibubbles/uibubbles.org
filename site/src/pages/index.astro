@@ -2,6 +2,7 @@
 import Base from "../layouts/Base.astro";
 import HeroDemo from "../components/HeroDemo.astro";
 import ModeMark from "../components/ModeMark.astro";
+import GlueDemo from "../components/GlueDemo.astro";
 
 const usesSnippet = `// In the caller's manifest: a local alias, like an import map
 "uses": {
@@ -109,11 +110,13 @@ const foamSnippet = `{
   <section class="section" id="glue">
     <div class="wrap">
       <div class="head">
-        <h2>Glue and foam</h2>
-        <p>Bubbles that touch can share a wall.</p>
+        <h2>Drag, drop and glue</h2>
+        <p>Bubbles stay isolated, yet they can work together.</p>
       </div>
       <div>
-        <p class="lead">Two touching Bubbles form a wall that the host owns. Only events both sides declared can cross it: selecting a meeting can highlight its attendees, and picking a person can filter the calendar.</p>
+        <p class="lead"><strong>Drag and drop.</strong> Drag one item from a Bubble onto another, like a contact onto a meeting. The host runs the drag: the source offers a typed item, and only Bubbles that declare they accept that type light up as drop targets. The drop is the consent, so the receiver gets exactly that item and nothing else. Keyboard and touch work too.</p>
+        <p><strong>Glue.</strong> Two touching Bubbles form a wall that the host owns. Only events both sides declared can cross it: selecting a meeting can highlight its attendees, and picking a person can filter the calendar.</p>
+        <GlueDemo />
         <p>A cluster of glued Bubbles is called <strong>foam</strong>. Foam is plain data, so it can be pinned or shared as a small app without anyone writing code. You can unglue it, and popping one Bubble leaves the rest.</p>
         <span class="snippet-label">Draft syntax, will change</span>
         <pre><code>{foamSnippet}</code></pre>
