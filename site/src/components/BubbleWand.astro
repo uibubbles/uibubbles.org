@@ -1,0 +1,223 @@
+---
+// "What is a Bubble?" as a scene: a wand blows Bubbles, each one a tiny self-contained UI.
+// Hand-built SVG + CSS; a small script pops a Bubble on click, tap or Enter/Space.
+// Illustration only: not the real runtime.
+---
+<figure class="wand-fig">
+  <div class="scene" data-wand>
+    <svg class="wand" viewBox="0 0 170 230" aria-hidden="true" focusable="false">
+      <defs>
+        <linearGradient id="wand-film" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stop-color="var(--film-a)" />
+          <stop offset="0.35" stop-color="var(--film-b)" />
+          <stop offset="0.65" stop-color="var(--film-c)" />
+          <stop offset="1" stop-color="var(--film-d)" />
+        </linearGradient>
+      </defs>
+      <line x1="22" y1="216" x2="86" y2="108" stroke="var(--ink-2)" stroke-width="7" stroke-linecap="round" />
+      <line x1="22" y1="216" x2="46" y2="175" stroke="var(--ink)" stroke-width="11" stroke-linecap="round" />
+      <g transform="rotate(22 100 72)">
+        <ellipse class="ring-film" cx="100" cy="72" rx="27" ry="35" fill="url(#wand-film)" />
+        <ellipse cx="100" cy="72" rx="30" ry="38" fill="none" stroke="var(--ink-2)" stroke-width="5" />
+      </g>
+    </svg>
+
+    <button type="button" class="b" data-name="Calendar" aria-label="Calendar Bubble. Pop it."
+      style="--d:170;--dx:50;--dy:34;--dur:27s;--delay:-7s;--sx:38;--sy:30;--ph:0s">
+      <span class="sway"><span class="film"><span class="face">
+        <svg viewBox="0 0 100 100" aria-hidden="true" focusable="false">
+          <text x="50" y="25" text-anchor="middle" class="t strong" font-size="7">Tuesday 14</text>
+          <rect x="24" y="31" width="52" height="13" rx="4" class="row" />
+          <text x="28" y="40" class="t" font-size="5.6">09:00 Stand-up</text>
+          <rect x="24" y="47" width="52" height="13" rx="4" class="row hot" />
+          <text x="28" y="56" class="t" font-size="5.6">12:30 Lunch</text>
+          <rect x="24" y="63" width="52" height="13" rx="4" class="row" />
+          <text x="28" y="72" class="t" font-size="5.6">16:00 Dentist</text>
+        </svg>
+      </span></span></span>
+    </button>
+
+    <button type="button" class="b" data-name="To-buy list" aria-label="To-buy list Bubble. Pop it."
+      style="--d:132;--dx:72;--dy:40;--dur:21s;--delay:-15s;--sx:58;--sy:68;--ph:0s">
+      <span class="sway"><span class="film"><span class="face">
+        <svg viewBox="0 0 100 100" aria-hidden="true" focusable="false">
+          <text x="50" y="26" text-anchor="middle" class="t strong" font-size="8">To buy</text>
+          <rect x="25" y="33" width="8" height="8" rx="2" class="box on" />
+          <path d="M26.6 37.2l2 2 3.2-4" class="tick" />
+          <text x="38" y="40" class="t struck" font-size="6.6">Milk</text>
+          <rect x="25" y="49" width="8" height="8" rx="2" class="box" />
+          <text x="38" y="56" class="t" font-size="6.6">Bread</text>
+          <rect x="25" y="65" width="8" height="8" rx="2" class="box" />
+          <text x="38" y="72" class="t" font-size="6.6">Apples</text>
+        </svg>
+      </span></span></span>
+    </button>
+
+    <button type="button" class="b" data-name="Contact card" aria-label="Contact card Bubble. Pop it."
+      style="--d:150;--dx:34;--dy:46;--dur:24s;--delay:-2s;--sx:78;--sy:34;--ph:0s">
+      <span class="sway"><span class="film"><span class="face">
+        <svg viewBox="0 0 100 100" aria-hidden="true" focusable="false">
+          <circle cx="50" cy="37" r="14" fill="var(--film-c)" />
+          <text x="50" y="42.5" text-anchor="middle" font-size="15" font-weight="700" fill="#12283a" class="disp">A</text>
+          <text x="50" y="63" text-anchor="middle" class="t strong" font-size="8">Ana Petrova</text>
+          <text x="50" y="72" text-anchor="middle" class="t mute" font-size="5.6">ana@example.com</text>
+        </svg>
+      </span></span></span>
+    </button>
+
+    <button type="button" class="b" data-name="Bar chart" aria-label="Bar chart Bubble. Pop it."
+      style="--d:118;--dx:84;--dy:26;--dur:19s;--delay:-11s;--sx:88;--sy:74;--ph:0s">
+      <span class="sway"><span class="film"><span class="face">
+        <svg viewBox="0 0 100 100" aria-hidden="true" focusable="false">
+          <text x="50" y="27" text-anchor="middle" class="t strong" font-size="8">Steps</text>
+          <rect x="26" y="56" width="8" height="18" rx="2" class="bar" />
+          <rect x="37" y="48" width="8" height="26" rx="2" class="bar" />
+          <rect x="48" y="40" width="8" height="34" rx="2" class="bar hot" />
+          <rect x="59" y="52" width="8" height="22" rx="2" class="bar" />
+          <rect x="70" y="60" width="6" height="14" rx="2" class="bar" />
+          <line x1="22" y1="74.5" x2="78" y2="74.5" stroke="var(--ink-2)" stroke-width="1" />
+        </svg>
+      </span></span></span>
+    </button>
+
+    <button type="button" class="b" data-name="Map" aria-label="Map Bubble. Pop it."
+      style="--d:142;--dx:58;--dy:38;--dur:23s;--delay:-19s;--sx:20;--sy:64;--ph:0s">
+      <span class="sway"><span class="film"><span class="face">
+        <svg viewBox="0 0 100 100" aria-hidden="true" focusable="false">
+          <rect x="0" y="0" width="100" height="100" fill="var(--lagoon-soft)" />
+          <path d="M0 70 C25 60 40 80 100 58" stroke="var(--surface)" stroke-width="6" fill="none" />
+          <path d="M30 0 L44 100" stroke="var(--surface)" stroke-width="5" fill="none" />
+          <path d="M0 30 L100 38" stroke="var(--surface)" stroke-width="3" fill="none" />
+          <path d="M60 10 q22 2 26 22 q-18 8 -30 -4z" fill="var(--film-a)" opacity="0.5" />
+          <path d="M52 64 C52 64 39 49 39 41 a13 13 0 0 1 26 0 c0 8 -13 23 -13 23z" fill="var(--no)" />
+          <circle cx="52" cy="41" r="4.5" fill="var(--surface)" />
+          <text x="52" y="76" text-anchor="middle" class="t strong" font-size="6.4">Cafe Lune</text>
+        </svg>
+      </span></span></span>
+    </button>
+
+    <div class="fx" aria-hidden="true"></div>
+  </div>
+  <div class="meta">
+    <figcaption>Each Bubble is one self-contained piece of UI, blown by an extension and popped when you are done. Try popping one. <span class="sim">Illustration of the draft model.</span></figcaption>
+    <button type="button" class="toggle" data-toggle aria-pressed="false">Pause motion</button>
+  </div>
+  <p class="sr-only" aria-live="polite" data-live></p>
+</figure>
+
+<script>
+  import { burst, reducedMotion } from "../scripts/pop";
+
+  for (const fig of document.querySelectorAll<HTMLElement>(".wand-fig")) {
+    const scene = fig.querySelector<HTMLElement>("[data-wand]")!;
+    const fx = scene.querySelector<HTMLElement>(".fx")!;
+    const live = fig.querySelector<HTMLElement>("[data-live]")!;
+    const toggle = fig.querySelector<HTMLButtonElement>("[data-toggle]")!;
+    const bubbles = [...scene.querySelectorAll<HTMLButtonElement>(".b")];
+
+    const pop = (b: HTMLButtonElement, byKeyboard = false) => {
+      if (b.classList.contains("gone")) return;
+      const film = b.querySelector<HTMLElement>(".film")!;
+      const r = film.getBoundingClientRect();
+      const s = scene.getBoundingClientRect();
+      burst(fx, r.left - s.left + r.width / 2, r.top - s.top + r.height / 2, r.width);
+      b.classList.add("gone");
+      live.textContent = `${b.dataset.name} Bubble popped. The wand will blow another.`;
+      const next = bubbles.find((o) => o !== b && !o.classList.contains("gone"));
+      if (byKeyboard) next?.focus({ preventScroll: true });
+      setTimeout(() => {
+        b.style.setProperty("--delay", "0s"); // respawn from the wand, not mid-flight
+        b.classList.remove("gone");
+      }, (reducedMotion() ? 3000 : 3500) + Math.random() * 2500);
+    };
+    for (const b of bubbles) b.addEventListener("click", (e) => pop(b, e.detail === 0));
+
+    toggle.addEventListener("click", () => {
+      const on = scene.toggleAttribute("data-userpaused");
+      toggle.setAttribute("aria-pressed", String(on));
+      toggle.textContent = on ? "Resume motion" : "Pause motion";
+    });
+
+    // pause the loops while off-screen
+    if ("IntersectionObserver" in window) {
+      new IntersectionObserver(([e]) => scene.toggleAttribute("data-paused", !e.isIntersecting), { threshold: 0.05 }).observe(scene);
+    }
+  }
+</script>
+
+<style>
+  .wand-fig { margin: 0; }
+  .scene { position: relative; height: 420px; container-type: size; --k: 1; overflow: hidden; border-radius: 28px;
+    background:
+      radial-gradient(120% 90% at 8% 100%, color-mix(in srgb, var(--film-a) 16%, transparent), transparent 60%),
+      linear-gradient(180deg, transparent 40%, color-mix(in srgb, var(--lagoon-soft) 70%, transparent)); }
+  @media (max-width: 600px) { .scene { height: 380px; --k: 0.7; } .b:nth-of-type(4) { display: none; } }
+
+  .wand { position: absolute; left: 0; bottom: 0; width: calc(170px * var(--k)); height: calc(230px * var(--k)); overflow: visible; }
+
+  .b { --w: calc(var(--d) * var(--k) * 1px);
+    position: absolute; left: calc(100px * var(--k)); bottom: calc(158px * var(--k)); width: var(--w); height: var(--w);
+    margin: 0; padding: 0; border: 0; background: none; border-radius: 50%; cursor: pointer; font: inherit; color: inherit;
+    transform: translate(-50%, 50%); will-change: transform, opacity;
+    animation: drift var(--dur) linear infinite; animation-delay: var(--delay); }
+  .b:focus-visible { outline: 3px solid var(--lagoon); outline-offset: 4px; border-radius: 50%; }
+  .sway { position: absolute; inset: 0; animation: sway 4.6s ease-in-out infinite alternate; }
+  .b:nth-of-type(2) .sway { animation-duration: 3.8s; animation-delay: -1s; }
+  .b:nth-of-type(3) .sway { animation-duration: 5.4s; animation-delay: -2s; }
+  .b:nth-of-type(4) .sway { animation-duration: 3.4s; animation-delay: -0.5s; }
+  .b:nth-of-type(5) .sway { animation-duration: 5s; animation-delay: -3s; }
+  .film { position: absolute; inset: 0; border-radius: 50%; padding: 3px; background: var(--rim);
+    box-shadow: 0 10px 24px -12px color-mix(in srgb, var(--film-b) 60%, transparent);
+    animation: wobble 2.9s ease-in-out infinite alternate; transition: transform 0.2s; }
+  .b:hover .film, .b:focus-visible .film { transform: scale(1.05); }
+  .face { display: block; width: 100%; height: 100%; border-radius: 50%; overflow: hidden; position: relative;
+    background: radial-gradient(circle at 36% 28%, color-mix(in srgb, var(--surface) 98%, transparent), color-mix(in srgb, var(--bubble-fill) 94%, transparent) 75%);
+    box-shadow: inset 0 0 22px -4px color-mix(in srgb, var(--film-b) 55%, transparent); }
+  .face svg { display: block; width: 100%; height: 100%; }
+  /* the glint */
+  .film::after { content: ""; position: absolute; top: 11%; left: 17%; width: 24%; height: 11%; border-radius: 50%;
+    background: radial-gradient(closest-side, rgb(255 255 255 / 0.95), rgb(255 255 255 / 0)); transform: rotate(-38deg); pointer-events: none; }
+
+  .t { fill: var(--ink); font-family: var(--font-body); }
+  .t.strong { font-weight: 700; font-family: var(--font-display); }
+  .t.mute { fill: var(--ink-2); }
+  .t.struck { fill: var(--ink-2); text-decoration: line-through; }
+  .disp { font-family: var(--font-display); }
+  .row { fill: var(--lagoon-soft); } .row.hot { fill: color-mix(in srgb, var(--film-c) 45%, var(--lagoon-soft)); }
+  .box { fill: none; stroke: var(--ink-2); stroke-width: 1.3; } .box.on { fill: var(--lagoon); stroke: var(--lagoon); }
+  .tick { fill: none; stroke: #fff; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+  .bar { fill: color-mix(in srgb, var(--film-a) 75%, var(--lagoon)); } .bar.hot { fill: var(--lagoon); }
+
+  .fx { position: absolute; inset: 0; pointer-events: none; }
+  .ring-film { transform-origin: 100px 72px; animation: ringbreathe 3.2s ease-in-out infinite alternate; opacity: 0.4; }
+
+  /* one journey: form on the ring, inflate with a spring, detach, drift up and right, fade near the top */
+  @keyframes drift {
+    0%   { transform: translate(-50%, 50%) translate(0, 0) scale(0.05); opacity: 0; }
+    3%   { opacity: 1; }
+    9%   { transform: translate(-50%, 50%) translate(calc(var(--dx) * 0.03cqw), calc(var(--dy) * -0.05cqh)) scale(1.07); }
+    12%  { transform: translate(-50%, 50%) translate(calc(var(--dx) * 0.05cqw), calc(var(--dy) * -0.08cqh)) scale(1); }
+    40%  { transform: translate(-50%, 50%) translate(calc(var(--dx) * 0.4cqw), calc(var(--dy) * -0.45cqh)) scale(1); }
+    75%  { transform: translate(-50%, 50%) translate(calc(var(--dx) * 0.8cqw), calc(var(--dy) * -0.85cqh)) scale(1); opacity: 1; }
+    100% { transform: translate(-50%, 50%) translate(calc(var(--dx) * 1cqw), calc(var(--dy) * -1cqh)) scale(1.1); opacity: 0; }
+  }
+  @keyframes sway { from { transform: translateX(-7px); } to { transform: translateX(7px); } }
+  @keyframes wobble { 0% { transform: scale(1.03, 0.97); } 100% { transform: scale(0.97, 1.03); } }
+  @keyframes ringbreathe { from { transform: scale(0.97); } to { transform: scale(1.04); } }
+
+  .b.gone { animation: none; opacity: 0; visibility: hidden; pointer-events: none; }
+  [data-paused] .b, [data-paused] .sway, [data-paused] .film, [data-paused] .ring-film,
+  [data-userpaused] .b, [data-userpaused] .sway, [data-userpaused] .film, [data-userpaused] .ring-film { animation-play-state: paused; }
+
+  .meta { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 0.6rem 1.5rem; margin-top: 0.8rem; }
+  figcaption { font-size: var(--step--1); color: var(--ink-2); max-width: 58ch; }
+  .sim { white-space: nowrap; }
+  .toggle { font: inherit; font-size: var(--step--1); color: var(--lagoon); background: none; border: 0; padding: 0.5rem 0; min-height: 44px; cursor: pointer; text-decoration: underline; text-underline-offset: 0.18em; }
+
+  /* reduced motion: a still arrangement; popping just fades */
+  @media (prefers-reduced-motion: reduce) {
+    .b { animation: none; transform: translate(-50%, 50%) translate(calc(var(--sx) * 1cqw - 100px * var(--k)), calc(var(--sy) * -1cqh + 158px * var(--k))); transition: opacity 0.3s, visibility 0.3s; }
+    .sway, .film, .ring-film { animation: none; }
+    .toggle { display: none; }
+  }
+</style>
