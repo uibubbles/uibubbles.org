@@ -186,3 +186,9 @@ th { font-family: var(--font-display); font-size: 0.95rem; }
 .theme-toggle .moon { display: none; }
 :root[data-theme="dark"] .theme-toggle .sun { display: none; }
 :root[data-theme="dark"] .theme-toggle .moon { display: block; }
+/* narrow phones: brand, three links and the theme toggle must fit without overflow */
+@media (max-width: 420px) {
+  .bar { gap: 0.6rem; }
+  .site-header nav { gap: 0.75rem; }
+  .theme-toggle { margin-left: 0; width: 2rem; height: 2rem; }
+}
