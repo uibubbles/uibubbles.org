@@ -3,6 +3,10 @@ import Base from "../layouts/Base.astro";
 import HeroDemo from "../components/HeroDemo.astro";
 import ModeMark from "../components/ModeMark.astro";
 import GlueDemo from "../components/GlueDemo.astro";
+import BubbleWand from "../components/BubbleWand.astro";
+import PickerDemo from "../components/PickerDemo.astro";
+import GrantMembrane from "../components/GrantMembrane.astro";
+import AmbientBubbles from "../components/AmbientBubbles.astro";
 
 const usesSnippet = `// In the caller's manifest: a local alias, like an import map
 "uses": {
@@ -25,6 +29,7 @@ const foamSnippet = `{
 ---
 <Base>
   <section class="hero">
+    <AmbientBubbles />
     <div class="wrap">
       <div>
         <span class="badge">Early draft</span>
@@ -39,20 +44,19 @@ const foamSnippet = `{
     </div>
   </section>
 
-  <section class="section" id="what">
+  <section class="section what" id="what">
     <div class="wrap">
       <div class="head">
         <h2>What is a Bubble?</h2>
         <p>One UI instance of an extension, shown inside a host surface.</p>
       </div>
-      <div>
-        <p class="lead">The host decides where a Bubble appears. The extension decides what is inside it. Neither has to know how the other is built.</p>
-        <dl class="facts">
-          <div><dt>Isolated</dt><dd>Each extension runs apart from the host and from other extensions. It sees only what the user hands it.</dd></div>
-          <div><dt>Independent</dt><dd>A host does not need to ship a calendar to show one. An extension supplies it, and the host brokers every call.</dd></div>
-          <div><dt>Not only chat, not only AI</dt><dd>Chat is the first surface. A dashboard, an IDE sidebar or a terminal can host Bubbles too, and an assistant, a button or plain code can pop one.</dd></div>
-        </dl>
-      </div>
+      <p class="lead">The host decides where a Bubble appears. The extension decides what is inside it. Neither has to know how the other is built.</p>
+      <div class="wand-row"><BubbleWand /></div>
+      <dl class="facts">
+        <div><dt>Isolated</dt><dd>Each extension runs apart from the host and from other extensions. It sees only what the user hands it.</dd></div>
+        <div><dt>Independent</dt><dd>A host does not need to ship a calendar to show one. An extension supplies it, and the host brokers every call.</dd></div>
+        <div><dt>Not only chat, not only AI</dt><dd>Chat is the first surface. A dashboard, an IDE sidebar or a terminal can host Bubbles too, and an assistant, a button or plain code can pop one.</dd></div>
+      </dl>
     </div>
   </section>
 
@@ -99,6 +103,7 @@ const foamSnippet = `{
       </div>
       <div>
         <p class="lead">A tax calculator wants to share a result with people. It asks for a contacts picker, and the user chooses.</p>
+        <PickerDemo />
         <span class="snippet-label">Draft syntax, will change</span>
         <pre><code>{usesSnippet}</code></pre>
         <p><strong>Interactive calls</strong> open the callee's Bubble on top of the caller, labelled with who is asking. They must start from a user gesture, and the caller gets only what was picked. <strong>Headless calls</strong> return data without UI, so the host checks a grant first.</p>
@@ -135,17 +140,7 @@ const foamSnippet = `{
           <p class="principle">A Bubble declares what it wants. The Host decides what it gets.</p>
           <p class="principle">The user's gesture is the grant.</p>
         </div>
-        <div class="grants">
-          <div>
-            <h3>What the host decided for one Bubble</h3>
-            <ul>
-              <li><span class="g-ok" aria-hidden="true">✓</span><span><span class="sr-only">Granted: </span>theme</span></li>
-              <li><span class="g-ok" aria-hidden="true">✓</span><span><span class="sr-only">Granted: </span>timezone</span></li>
-              <li><span class="g-ask" aria-hidden="true">?</span><span><span class="sr-only">Asks the user each time: </span>contacts (via picker)</span></li>
-              <li><span class="g-no" aria-hidden="true">✗</span><span><span class="sr-only">Denied: </span>unrestricted network</span></li>
-            </ul>
-          </div>
-        </div>
+        <GrantMembrane />
         <ol class="flow">
           <li>The Bubble's manifest lists what it asks for. Asking is not getting.</li>
           <li>The host evaluates the request.</li>
@@ -198,3 +193,13 @@ const foamSnippet = `{
     </div>
   </section>
 </Base>
+
+<style>
+  .what .head { position: static; }
+  .what .wand-row { grid-column: 1 / -1; }
+  .what .facts { grid-column: 1 / -1; }
+  @media (min-width: 900px) {
+    .what .facts { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 2rem; }
+    .what .lead { margin-bottom: 0; }
+  }
+</style>

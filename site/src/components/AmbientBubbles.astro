@@ -1,0 +1,65 @@
+---
+// Sparse, low-contrast bubbles drifting behind the hero. Decorative only: aria-hidden, never
+// focusable, never over the text (they sit behind it). The pointer pops them (hit-tested against
+// the hero, since the content sits above). Switched off entirely under reduced motion.
+const bubbles = [
+  { x: 47, y: 8, d: 64, dur: 19, dx: 14, dy: -26 },
+  { x: 92, y: 14, d: 104, dur: 25, dx: -18, dy: 22 },
+  { x: 55, y: 74, d: 46, dur: 17, dx: 10, dy: -20 },
+  { x: 3, y: 62, d: 88, dur: 23, dx: 16, dy: -28 },
+  { x: 80, y: 80, d: 58, dur: 21, dx: -12, dy: -24 },
+  { x: 30, y: 6, d: 38, dur: 15, dx: -10, dy: 18 },
+];
+---
+<div class="ambient" aria-hidden="true" data-ambient>
+  {bubbles.map((b, i) => (
+    <span class="ab" style={`--x:${b.x}%;--y:${b.y}%;--d:${b.d}px;--dur:${b.dur}s;--dx:${b.dx}px;--dy:${b.dy}px;--i:${i}`}><span class="ar"></span></span>
+  ))}
+</div>
+
+<script>
+  import { burst, reducedMotion } from "../scripts/pop";
+
+  const layer = document.querySelector<HTMLElement>("[data-ambient]");
+  const hero = layer?.parentElement;
+  if (layer && hero && !reducedMotion()) {
+    const bubs = [...layer.querySelectorAll<HTMLElement>(".ab")];
+    const pop = (b: HTMLElement) => {
+      if (b.classList.contains("gone")) return;
+      const r = b.getBoundingClientRect(), s = layer.getBoundingClientRect();
+      burst(layer, r.left - s.left + r.width / 2, r.top - s.top + r.height / 2, r.width, 8);
+      b.classList.add("gone");
+      setTimeout(() => b.classList.remove("gone"), 7000 + Math.random() * 6000);
+    };
+    // the hero's content sits above the layer, so hit-test by distance rather than by event target
+    const hit = (e: PointerEvent) => {
+      for (const b of bubs) {
+        if (b.classList.contains("gone") || getComputedStyle(b).display === "none") continue;
+        const r = b.getBoundingClientRect();
+        const dx = e.clientX - (r.left + r.width / 2), dy = e.clientY - (r.top + r.height / 2);
+        if (dx * dx + dy * dy <= (r.width / 2) ** 2) { pop(b); return; }
+      }
+    };
+    hero.addEventListener("pointermove", (e) => { if (e.pointerType === "mouse") hit(e); }, { passive: true });
+    hero.addEventListener("pointerdown", (e) => { if (e.pointerType !== "mouse") hit(e); }, { passive: true });
+    if ("IntersectionObserver" in window) {
+      new IntersectionObserver(([e]) => layer.toggleAttribute("data-paused", !e.isIntersecting)).observe(hero);
+    }
+  }
+</script>
+
+<style>
+  .ambient { position: absolute; inset: 0; overflow: hidden; pointer-events: none; z-index: 0; }
+  .ab { position: absolute; left: var(--x); top: var(--y); width: var(--d); height: var(--d); margin: calc(var(--d) / -2) 0 0 calc(var(--d) / -2);
+    animation: float var(--dur) ease-in-out infinite alternate; animation-delay: calc(var(--i) * -3.1s); transition: opacity 0.4s; will-change: transform; }
+  .ar { display: block; width: 100%; height: 100%; border-radius: 50%; opacity: 0.4; position: relative;
+    background: radial-gradient(circle at 34% 28%, rgb(255 255 255 / 0.4) 0 7%, transparent 9%), radial-gradient(circle, transparent 62%, color-mix(in srgb, var(--film-b) 22%, transparent) 100%);
+    box-shadow: inset 0 0 0 1.5px color-mix(in srgb, var(--film-a) 55%, transparent), inset 0 0 14px color-mix(in srgb, var(--film-c) 28%, transparent);
+    animation: wob 4.2s ease-in-out infinite alternate; animation-delay: calc(var(--i) * -0.7s); }
+  .ab.gone { opacity: 0; transition: none; }
+  @keyframes float { from { transform: translate(0, 0); } to { transform: translate(var(--dx), var(--dy)); } }
+  @keyframes wob { from { transform: scale(1.04, 0.96); } to { transform: scale(0.96, 1.04); } }
+  [data-paused] .ab, [data-paused] .ar { animation-play-state: paused; }
+  @media (max-width: 640px) { .ab:nth-child(n+5) { display: none; } }
+  @media (prefers-reduced-motion: reduce) { .ambient { display: none; } }
+</style>

@@ -1,0 +1,131 @@
+---
+// Security visual: four requests float from a Bubble toward the host's membrane.
+// theme and timezone pass (granted), contacts stops at the wall (asks through the picker),
+// network bounces back and pops (denied). One ~11s loop with a pause; still end state under
+// reduced motion. The same four outcomes are in the text list for assistive tech.
+---
+<figure class="membrane">
+  <div class="scene" data-membrane>
+    <div class="owner" aria-hidden="true"><span class="film"><span class="face"><b>Bubble</b><small>asks</small></span></span></div>
+    <div class="wall" aria-hidden="true"><span class="cap">Host decides</span></div>
+
+    <div class="lane l1" aria-hidden="true"><span class="req pass1"><span class="lbl">theme</span><span class="v ok">✓</span></span></div>
+    <div class="lane l2" aria-hidden="true"><span class="req pass2"><span class="lbl">timezone</span><span class="v ok">✓</span></span></div>
+    <div class="lane l3" aria-hidden="true"><span class="req ask"><span class="lbl">contacts</span><span class="v q">?</span></span><span class="tag">only via picker</span></div>
+    <div class="lane l4" aria-hidden="true"><span class="req deny"><span class="lbl">network</span></span><span class="v no">✗</span></div>
+  </div>
+  <ul class="sr-only">
+    <li>Granted: theme</li>
+    <li>Granted: timezone</li>
+    <li>Asks the user each time: contacts, only via the picker</li>
+    <li>Denied: unrestricted network</li>
+  </ul>
+  <figcaption>What the host decided for one Bubble's four requests. <span class="sim">Illustration of the draft model.</span></figcaption>
+</figure>
+
+<script>
+  // pause the loop while off-screen
+  for (const s of document.querySelectorAll<HTMLElement>("[data-membrane]")) {
+    if ("IntersectionObserver" in window) {
+      new IntersectionObserver(([e]) => s.toggleAttribute("data-paused", !e.isIntersecting), { threshold: 0.1 }).observe(s);
+    }
+  }
+</script>
+
+<style>
+  .membrane { margin: 0; }
+  .scene { position: relative; container-type: inline-size; height: 260px; border-radius: 22px; background: var(--surface); border: 1px solid var(--line); overflow: hidden; --loop: 11s; }
+  .owner { position: absolute; left: 2.5%; top: 50%; width: clamp(64px, 19cqw, 100px); aspect-ratio: 1; transform: translateY(-50%); }
+  .film { display: block; width: 100%; height: 100%; padding: 3px; border-radius: 50%; background: var(--rim); animation: wob 3s ease-in-out infinite alternate; }
+  .face { width: 100%; height: 100%; border-radius: 50%; display: grid; place-content: center; text-align: center; line-height: 1.15;
+    background: radial-gradient(circle at 36% 28%, var(--surface), var(--bubble-fill)); box-shadow: inset 0 0 18px -4px color-mix(in srgb, var(--film-b) 55%, transparent); }
+  .face b { font-family: var(--font-display); font-size: 0.85rem; } .face small { color: var(--ink-2); font-size: 0.68rem; }
+
+  /* the membrane: a vertical soap-film wall, shimmering slowly */
+  .wall { position: absolute; left: 66%; top: 28px; bottom: 10px; width: 10px; margin-left: -5px; border-radius: 10px;
+    background: linear-gradient(180deg, var(--film-a), var(--film-b), var(--film-c), var(--film-d), var(--film-a)); background-size: 100% 200%; opacity: 0.85; animation: shimmer 6s linear infinite; }
+  .cap { position: absolute; top: -4px; left: 50%; transform: translate(-50%, -100%); font-size: 0.68rem; color: var(--ink-2); white-space: nowrap; display: none; }
+
+  .lane { position: absolute; left: 0; right: 0; height: 40px; }
+  .l1 { top: 22px; } .l2 { top: 76px; } .l3 { top: 130px; } .l4 { top: 184px; }
+  .req { position: absolute; left: 26%; top: 6px; height: 28px; display: inline-flex; align-items: center; gap: 0.3rem; padding: 0 0.7rem; border-radius: 999px; white-space: nowrap;
+    font-family: var(--font-mono); font-size: 0.72rem; color: var(--ink); background: var(--bubble-fill); box-shadow: inset 0 0 0 2px var(--film-a), inset 0 0 10px color-mix(in srgb, var(--film-c) 50%, transparent);
+    opacity: 0; transform-origin: 0 50%; will-change: transform, opacity; }
+  .v { font-weight: 700; font-family: var(--font-body); font-size: 0.95rem; line-height: 1; opacity: 0; }
+  .ok { color: var(--ok); } .q { color: var(--ask); } .no { color: var(--no); }
+  .tag { position: absolute; left: 70%; top: 5px; max-width: 28%; font-size: 0.68rem; line-height: 1.2; color: var(--ask); opacity: 0; animation: tag var(--loop) infinite both; }
+  .l4 > .v { position: absolute; left: 33%; top: 9px; opacity: 0; animation: nope var(--loop) infinite both; font-size: 1.2rem; }
+
+  /* travel distances in container width: the wall sits at 66% */
+  .req { --stop: calc(39cqw - 100%); --through: 42cqw; }
+  .pass1 { animation: pass1 var(--loop) infinite both; } .pass1 .v { animation: verdict1 var(--loop) infinite both; }
+  .pass2 { animation: pass2 var(--loop) infinite both; } .pass2 .v { animation: verdict2 var(--loop) infinite both; }
+  .ask { animation: ask var(--loop) infinite both; } .ask .v { animation: verdict3 var(--loop) infinite both; }
+  .deny { animation: deny var(--loop) infinite both; }
+  .deny::after { content: ""; position: absolute; inset: -4px; border-radius: 999px; border: 2px solid var(--no); opacity: 0; animation: ring var(--loop) infinite both; }
+
+  @keyframes wob { 0% { transform: scale(1.03, 0.97); } 100% { transform: scale(0.97, 1.03); } }
+  @keyframes shimmer { to { background-position: 0 200%; } }
+
+  /* loop: requests blow out one after another (4-24%), outcomes hold (to 86%), fade, short rest */
+  @keyframes pass1 {
+    0%, 4% { opacity: 0; transform: translateX(0) scale(0.1); }
+    8% { opacity: 1; transform: translateX(0) scale(1.06); }
+    10% { transform: translateX(1cqw) scale(1); }
+    28% { opacity: 1; transform: translateX(var(--stop)) scale(1); }
+    31% { transform: translateX(calc(var(--stop) + 3cqw)) scale(0.8, 1.08); }
+    36%, 86% { opacity: 1; transform: translateX(var(--through)) scale(1); }
+    92%, 100% { opacity: 0; transform: translateX(var(--through)) scale(1); }
+  }
+  @keyframes pass2 {
+    0%, 9% { opacity: 0; transform: translateX(0) scale(0.1); }
+    13% { opacity: 1; transform: translateX(0) scale(1.06); }
+    15% { transform: translateX(1cqw) scale(1); }
+    33% { opacity: 1; transform: translateX(var(--stop)) scale(1); }
+    36% { transform: translateX(calc(var(--stop) + 3cqw)) scale(0.8, 1.08); }
+    41%, 86% { opacity: 1; transform: translateX(var(--through)) scale(1); }
+    92%, 100% { opacity: 0; transform: translateX(var(--through)) scale(1); }
+  }
+  @keyframes ask {
+    0%, 14% { opacity: 0; transform: translateX(0) scale(0.1); }
+    18% { opacity: 1; transform: translateX(0) scale(1.06); }
+    20% { transform: translateX(1cqw) scale(1); }
+    38% { opacity: 1; transform: translateX(var(--stop)) scale(1); }
+    40% { transform: translateX(calc(var(--stop) + 1cqw)) scale(0.9, 1.05); }
+    44%, 86% { opacity: 1; transform: translateX(var(--stop)) scale(1); }
+    92%, 100% { opacity: 0; transform: translateX(var(--stop)) scale(1); }
+  }
+  @keyframes deny {
+    0%, 19% { opacity: 0; transform: translateX(0) scale(0.1); }
+    23% { opacity: 1; transform: translateX(0) scale(1.06); }
+    25% { transform: translateX(1cqw) scale(1); }
+    43% { opacity: 1; transform: translateX(var(--stop)) scale(1); }
+    45% { opacity: 1; transform: translateX(calc(var(--stop) + 1.5cqw)) scale(0.75, 1.1); }
+    56% { opacity: 1; transform: translateX(2cqw) scale(1) rotate(-6deg); }
+    59% { opacity: 1; transform: translateX(1cqw) scale(1.25); }
+    61%, 100% { opacity: 0; transform: translateX(1cqw) scale(1.5); }
+  }
+  @keyframes ring { 0%, 58% { opacity: 0; transform: scale(0.9); } 60% { opacity: 0.9; transform: scale(1); } 66%, 100% { opacity: 0; transform: scale(1.5); } }
+  @keyframes verdict1 { 0%, 34% { opacity: 0; transform: scale(0.3); } 38%, 100% { opacity: 1; transform: scale(1); } }
+  @keyframes verdict2 { 0%, 39% { opacity: 0; transform: scale(0.3); } 43%, 100% { opacity: 1; transform: scale(1); } }
+  @keyframes verdict3 { 0%, 41% { opacity: 0; transform: scale(0.3); } 46%, 100% { opacity: 1; transform: scale(1); } }
+  @keyframes tag { 0%, 44% { opacity: 0; } 50%, 86% { opacity: 1; } 92%, 100% { opacity: 0; } }
+  @keyframes nope { 0%, 60% { opacity: 0; transform: scale(0.3); } 65%, 86% { opacity: 1; transform: scale(1); } 92%, 100% { opacity: 0; } }
+  /* the verdicts on the passed requests fade with their pills */
+  [data-paused] .req, [data-paused] .req .v, [data-paused] .tag, [data-paused] .l4 > .v, [data-paused] .wall, [data-paused] .film, [data-paused] .deny::after { animation-play-state: paused; }
+
+  figcaption { margin-top: 0.7rem; font-size: var(--step--1); color: var(--ink-2); max-width: 58ch; }
+  .sim { white-space: nowrap; }
+
+  @media (min-width: 560px) { .cap { display: block; } .scene { height: 250px; } }
+  @media (prefers-reduced-motion: reduce) {
+    .film, .wall, .req, .req .v, .tag, .l4 > .v, .deny::after { animation: none; }
+    .req { opacity: 1; }
+    .v, .tag, .l4 > .v { opacity: 1; transform: none; }
+    .pass1, .pass2 { transform: translateX(var(--through)); }
+    .ask { transform: translateX(var(--stop)); }
+    .deny { transform: translateX(var(--stop)); opacity: 0.55; }
+    .deny .lbl { text-decoration: line-through; }
+    .deny::after { display: none; }
+  }
+</style>
