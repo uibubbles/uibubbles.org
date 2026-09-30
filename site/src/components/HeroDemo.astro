@@ -1,7 +1,9 @@
 ---
-// Dependency-free illustration: a chat where a small "thinking" bubble blows, then inflates into
-// a Calendar Bubble; the same for Contacts; then the two glue along a shared wall.
-// Pure HTML and CSS keyframes, one 18s loop.
+// Dependency-free illustration of a chat host:
+// "What's on tomorrow?" -> a small thinking bubble blows, then inflates into a Calendar Bubble;
+// "Who is free?" -> the same for a Contacts Bubble; then Ana is dragged from Contacts onto
+// the 12:30 lunch and attaches to that event line as a chip.
+// Pure HTML and CSS keyframes, one 18s loop. Glue has its own illustration (GlueDemo).
 ---
 <figure class="demo">
   <div class="stage" aria-hidden="true">
@@ -9,40 +11,65 @@
       <div class="host-bar"><i></i><i></i><i></i><span>Chat, a host surface</span></div>
       <div class="thread">
         <p class="msg m1">What's on tomorrow?</p>
-        <div class="pair">
-          <div class="slot">
-          <span class="think t1"><span class="breath">thinking…</span></span>
-          <div class="bub cal"><div class="in">
-            <h4>Tomorrow</h4>
-            <ul>
-              <li><b>09:00</b> Stand-up</li>
-              <li class="ev"><b>12:30</b> Lunch with Ana</li>
-              <li><b>16:00</b> Dentist</li>
-            </ul>
-          </div></div>
+        <div class="slot">
+            <span class="think t1"><span class="breath">thinking…</span></span>
+            <div class="bub cal"><div class="in">
+              <h4>Tomorrow</h4>
+              <ul>
+                <li><b>09:00</b> Stand-up</li>
+                <li class="ev"><b>12:30</b> Lunch <span class="att"><span class="av">A</span>Ana</span></li>
+                <li><b>16:00</b> Dentist</li>
+              </ul>
+            </div></div>
           </div>
+        <p class="msg m2">Who is free?</p>
           <div class="slot">
-          <span class="think t2"><span class="breath">checking contacts…</span></span>
-          <div class="bub con"><div class="in">
-            <h4>Contacts</h4>
-            <ul>
-              <li class="pp ana"><span class="av">A</span>Ana</li>
-              <li class="pp"><span class="av b">B</span>Ben</li>
-              <li class="pp"><span class="av c">M</span>Mira</li>
-            </ul>
-          </div></div>
+            <span class="think t2"><span class="breath">checking who's free…</span></span>
+            <div class="bub con"><div class="in">
+              <h4>Free tomorrow</h4>
+              <ul>
+                <li class="pp ana"><span class="av">A</span>Ana</li>
+                <li class="pp"><span class="av b">B</span>Ben</li>
+                <li class="pp"><span class="av c">M</span>Mira</li>
+              </ul>
+            </div></div>
           </div>
-          <span class="wall"></span>
-          <span class="chip">event.selected</span>
-        </div>
-        <p class="msg m2">Who am I meeting?</p>
+        <span class="ghost"><span class="av">A</span>Ana
+            <svg class="cursor" viewBox="0 0 16 20" width="16" height="20"><path d="M1 1v15l4-4 3 7 3-1-3-7h6z" fill="#fff" stroke="#12283a" stroke-width="1.4" stroke-linejoin="round"/></svg>
+          </span>
       </div>
     </div>
   </div>
   <figcaption>
-    Illustration, not a live demo. While the answer is being prepared a small bubble blows; when it is ready it inflates into a Calendar Bubble. The same happens for Contacts, and then the two glue along a shared wall. Live demo coming.
+    Illustration, not a live demo. While an answer is prepared a small bubble blows, then inflates into a Calendar Bubble, and later a Contacts Bubble. Dragging Ana onto the lunch attaches her to that event: the drop is the consent, and the Calendar receives only Ana. Live demo coming.
   </figcaption>
 </figure>
+
+<script>
+  // Measure the drag path: from Ana's row in Contacts to the lunch row in the Calendar.
+  // Layout-only; without it the ghost falls back to approximate percentages.
+  const place = () => {
+    for (const thread of document.querySelectorAll<HTMLElement>(".demo .thread")) {
+      const ghost = thread.querySelector<HTMLElement>(".ghost");
+      const from = thread.querySelector<HTMLElement>(".ana");
+      const to = thread.querySelector<HTMLElement>(".ev");
+      if (!ghost || !from || !to) continue;
+      const box = (el: HTMLElement) => {
+        let x = 0, y = 0;
+        for (let n: HTMLElement | null = el; n && n !== thread; n = n.offsetParent as HTMLElement | null) { x += n.offsetLeft; y += n.offsetTop; }
+        return { x, y, w: el.offsetWidth, h: el.offsetHeight };
+      };
+      const a = box(from), b = box(to), gh = ghost.offsetHeight, gw = ghost.offsetWidth;
+      ghost.style.setProperty("--from-x", `${a.x + 4}px`);
+      ghost.style.setProperty("--from-y", `${a.y + (a.h - gh) / 2}px`);
+      ghost.style.setProperty("--to-x", `${b.x + b.w - gw - 4}px`); // where the chip attaches
+      ghost.style.setProperty("--to-y", `${b.y + (b.h - gh) / 2}px`);
+    }
+  };
+  place();
+  addEventListener("resize", place);
+  document.fonts?.ready.then(place);
+</script>
 
 <style>
   .demo { margin: 0; }
@@ -52,14 +79,22 @@
   .host-bar { display: flex; align-items: center; gap: 0.35rem; font-size: 0.75rem; color: var(--ink-2); padding: 0 0.2rem 0.7rem; }
   .host-bar i { width: 9px; height: 9px; border-radius: 50%; background: var(--line); }
   .host-bar span { margin-left: 0.5rem; }
-  .thread { display: grid; gap: 0.8rem; font-size: 0.85rem; }
+  .thread { position: relative; display: grid; gap: 0.6rem; font-size: 0.85rem; }
   .msg { margin: 0; padding: 0.5rem 0.9rem; border-radius: 18px 18px 4px 18px; background: var(--ink); color: var(--paper); justify-self: end; max-width: 80%; }
   .m1 { animation: m1 18s infinite both; }
   .m2 { animation: m2 18s infinite both; }
 
-  .pair { position: relative; display: grid; grid-template-columns: 1fr 1fr; gap: 14px; animation: close 18s infinite both; }
-  .slot { position: relative; display: grid; }
+  .slot { position: relative; display: grid; width: min(100%, 19rem); justify-self: start; }
   .bub { padding: 2px; background: var(--rim); border-radius: 22px; transform-origin: 0% 100%; }
+  .bub .in { background: var(--surface); border-radius: 20px; padding: 0.7rem 0.75rem; height: 100%; }
+  .bub h4 { margin: 0 0 0.45rem; font-family: var(--font-display); font-size: 0.95rem; }
+  .bub ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.25rem; }
+  .bub li { padding: 0.25rem 0.4rem; border-radius: 9px; line-height: 1.3; display: flex; gap: 0.4rem; align-items: center; outline: 1.5px dashed transparent; outline-offset: -1.5px; }
+  .cal li b { font-weight: 600; font-size: 0.72rem; color: var(--ink-2); }
+  .av { width: 1.4rem; height: 1.4rem; border-radius: 50%; display: grid; place-items: center; font-size: 0.7rem; font-weight: 600; color: #12283a; background: var(--film-a); flex: none; }
+  .av.b { background: var(--film-d); } .av.c { background: var(--film-c); }
+  .cal { animation: popCal 18s infinite both; }
+  .con { animation: popCon 18s infinite both; }
   .cal .in > * { animation: fillCal 18s infinite both; }
   .con .in > * { animation: fillCon 18s infinite both; }
 
@@ -73,54 +108,55 @@
     transform-origin: 0% 100%; animation: breathe 1.5s ease-in-out infinite; }
   .t1 { animation: think1 18s infinite both, swirl 2.4s linear infinite; }
   .t2 { animation: think2 18s infinite both, swirl 2.4s linear infinite; }
-  .bub .in { background: var(--surface); border-radius: 20px; padding: 0.7rem 0.75rem; height: 100%; min-height: 10.2rem; }
-  .bub h4 { margin: 0 0 0.45rem; font-family: var(--font-display); font-size: 0.95rem; }
-  .bub ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.25rem; }
-  .bub li { padding: 0.25rem 0.4rem; border-radius: 9px; line-height: 1.3; display: flex; gap: 0.4rem; align-items: center; }
-  .cal li b { font-weight: 600; font-size: 0.72rem; color: var(--ink-2); }
-  .av { width: 1.4rem; height: 1.4rem; border-radius: 50%; display: grid; place-items: center; font-size: 0.7rem; font-weight: 600; color: #12283a; background: var(--film-a); flex: none; }
-  .av.b { background: var(--film-d); } .av.c { background: var(--film-c); }
-  .cal { animation: popCal 18s infinite both, calEdge 18s infinite both; }
-  .con { animation: popCon 18s infinite both, conEdge 18s infinite both; }
-  .ev { animation: hl 18s infinite both; }
-  .ana { animation: hl2 18s infinite both; }
 
-  .wall { position: absolute; top: 10px; bottom: 10px; left: 50%; width: 4px; margin-left: -2px; border-radius: 4px; background: linear-gradient(var(--film-a), var(--film-b), var(--film-c), var(--film-d)); animation: wall 18s infinite both; }
-  .chip { position: absolute; top: 46%; left: 50%; transform: translateX(-50%); font-family: var(--font-mono); font-size: 0.66rem; padding: 0.15rem 0.5rem; border-radius: 999px; background: var(--ink); color: var(--paper); white-space: nowrap; animation: chip 18s infinite both; }
+  /* drag and drop: Ana is picked up, the calendar's rows light up as drop targets, she lands on the lunch */
+  .ana { animation: pick 18s infinite both; }
+  .cal li { animation: target 18s infinite both; }
+  .cal li.ev { animation: target 18s infinite both, hover 18s infinite both; }
+  .att { margin-left: auto; display: inline-flex; align-items: center; gap: 0.3rem; padding: 0.1rem 0.5rem 0.1rem 0.12rem;
+    border-radius: 999px; background: var(--paper); border: 1px solid var(--line); font-size: 0.75rem; transform-origin: 20% 50%;
+    animation: attach 18s infinite both; }
+  .att .av { width: 1.15rem; height: 1.15rem; font-size: 0.62rem; }
+  .ghost { position: absolute; z-index: 2; display: inline-flex; align-items: center; gap: 0.35rem; padding: 0.15rem 0.6rem 0.15rem 0.15rem;
+    border-radius: 999px; background: var(--surface); border: 1px solid var(--line); box-shadow: 0 8px 22px rgb(0 0 0 / 0.18);
+    font-size: 0.8rem; pointer-events: none; left: var(--from-x); top: var(--from-y); animation: drag 18s infinite both; }
+  .cursor { position: absolute; right: -10px; bottom: -14px; }
 
   @keyframes stage { 0% { opacity: 0; } 2% { opacity: 1; } 96% { opacity: 1; } 99%, 100% { opacity: 0; } }
-  @keyframes m1 { 0%, 3% { opacity: 0; transform: translateY(8px); } 6%, 100% { opacity: 1; transform: none; } }
-  @keyframes m2 { 0%, 31% { opacity: 0; transform: translateY(8px); } 34%, 100% { opacity: 1; transform: none; } }
+  @keyframes m1 { 0%, 2% { opacity: 0; transform: translateY(8px); } 5%, 100% { opacity: 1; transform: none; } }
+  @keyframes m2 { 0%, 22% { opacity: 0; transform: translateY(8px); } 25%, 100% { opacity: 1; transform: none; } }
   @keyframes breathe { 0%, 100% { transform: scale(1); } 45% { transform: scale(1.06, 1.1); } 70% { transform: scale(1.03, 0.98); } }
   @keyframes swirl { to { --swirl: 360deg; } }
-  @keyframes think1 { 0%, 6% { opacity: 0; transform: scale(0.3); } 8% { opacity: 1; transform: scale(1.08); } 9%, 13.5% { opacity: 1; transform: scale(1); } 15%, 100% { opacity: 0; transform: scale(1.9); } }
-  @keyframes think2 { 0%, 34% { opacity: 0; transform: scale(0.3); } 36% { opacity: 1; transform: scale(1.08); } 37%, 41.5% { opacity: 1; transform: scale(1); } 43%, 100% { opacity: 0; transform: scale(1.9); } }
+  @keyframes think1 { 0%, 5% { opacity: 0; transform: scale(0.3); } 7% { opacity: 1; transform: scale(1.08); } 8%, 12.5% { opacity: 1; transform: scale(1); } 14%, 100% { opacity: 0; transform: scale(1.9); } }
+  @keyframes think2 { 0%, 25% { opacity: 0; transform: scale(0.3); } 27% { opacity: 1; transform: scale(1.08); } 28%, 32% { opacity: 1; transform: scale(1); } 33.5%, 100% { opacity: 0; transform: scale(1.9); } }
   /* "inflated": grows from where the small bubble sat, springs, then the content fades in */
-  @keyframes popCal { 0%, 13.5% { opacity: 0; transform: scale(0.14, 0.2); } 14% { opacity: 1; transform: scale(0.14, 0.2); } 16.5% { transform: scale(1.04); } 18%, 100% { opacity: 1; transform: scale(1); } }
-  @keyframes popCon { 0%, 41.5% { opacity: 0; transform: scale(0.14, 0.2); } 42% { opacity: 1; transform: scale(0.14, 0.2); } 44.5% { transform: scale(1.04); } 46%, 100% { opacity: 1; transform: scale(1); } }
-  @keyframes fillCal { 0%, 16.5% { opacity: 0; } 19%, 100% { opacity: 1; } }
-  @keyframes fillCon { 0%, 44.5% { opacity: 0; } 47%, 100% { opacity: 1; } }
-  @keyframes close { 0%, 56% { gap: 14px; } 63%, 100% { gap: 0px; } }
-  @keyframes calEdge { 0%, 56% { border-radius: 22px; } 63%, 100% { border-radius: 22px 6px 6px 22px; } }
-  @keyframes conEdge { 0%, 56% { border-radius: 22px; } 63%, 100% { border-radius: 6px 22px 22px 6px; } }
-  @keyframes wall { 0%, 62% { opacity: 0; transform: scaleY(0.2); } 67%, 100% { opacity: 1; transform: scaleY(1); } }
-  @keyframes chip { 0%, 69% { opacity: 0; transform: translateX(-160%); } 72% { opacity: 1; transform: translateX(-160%); } 78% { opacity: 1; transform: translateX(-50%); } 84% { opacity: 1; transform: translateX(60%); } 88%, 100% { opacity: 0; transform: translateX(60%); } }
-  @keyframes hl { 0%, 68% { background: transparent; } 72%, 100% { background: var(--lagoon-soft); } }
-  @keyframes hl2 { 0%, 80% { background: transparent; } 84%, 100% { background: var(--lagoon-soft); } }
+  @keyframes popCal { 0%, 12.5% { opacity: 0; transform: scale(0.14, 0.2); } 13% { opacity: 1; transform: scale(0.14, 0.2); } 15.5% { transform: scale(1.04); } 17%, 100% { opacity: 1; transform: scale(1); } }
+  @keyframes popCon { 0%, 32% { opacity: 0; transform: scale(0.14, 0.2); } 32.5% { opacity: 1; transform: scale(0.14, 0.2); } 35% { transform: scale(1.04); } 36.5%, 100% { opacity: 1; transform: scale(1); } }
+  @keyframes fillCal { 0%, 15.5% { opacity: 0; } 18%, 100% { opacity: 1; } }
+  @keyframes fillCon { 0%, 35% { opacity: 0; } 37.5%, 100% { opacity: 1; } }
+  @keyframes pick { 0%, 43% { background: transparent; opacity: 1; } 45%, 61% { background: var(--lagoon-soft); opacity: 0.55; } 63%, 100% { background: transparent; opacity: 1; } }
+  /* the path is measured by the script below (row centres), so it lands on the lunch at any width */
+  .ghost { --from-x: 45%; --from-y: 78%; --to-x: 30%; --to-y: 34%; }
+  @keyframes drag {
+    0%, 45% { opacity: 0; left: var(--from-x); top: var(--from-y); transform: scale(0.9); }
+    47% { opacity: 1; left: var(--from-x); top: var(--from-y); transform: scale(1.06); }
+    57% { opacity: 1; left: var(--to-x); top: var(--to-y); transform: scale(1.06); }
+    60% { opacity: 1; left: var(--to-x); top: var(--to-y); transform: scale(1); }
+    62%, 100% { opacity: 0; left: var(--to-x); top: var(--to-y); transform: scale(0.5); }
+  }
+  @keyframes target { 0%, 46% { outline-color: transparent; } 48%, 60% { outline-color: var(--line); } 62%, 100% { outline-color: transparent; } }
+  @keyframes hover { 0%, 54% { background: transparent; } 56%, 61% { background: var(--lagoon-soft); } 64%, 100% { background: transparent; } }
+  @keyframes attach { 0%, 60% { opacity: 0; transform: scale(0.3); } 62.5% { opacity: 1; transform: scale(1.15); } 64.5%, 100% { opacity: 1; transform: scale(1); } }
 
   @media (max-width: 420px) {
     .bub .in { padding: 0.55rem 0.5rem; }
     .thread { font-size: 0.8rem; }
-    .cal li b { display: block; }
     .cal li { display: block; }
+    .cal li b { display: block; }
+    .att { margin: 0.2rem 0 0; }
   }
   @media (prefers-reduced-motion: reduce) {
-    .stage, .m1, .m2, .pair, .cal, .con, .ev, .ana, .wall, .chip, .bub .in > * { animation: none; }
-    .think { display: none; }
-    .pair { gap: 0; }
-    .cal { border-radius: 22px 6px 6px 22px; }
-    .con { border-radius: 6px 22px 22px 6px; }
-    .ev, .ana { background: var(--lagoon-soft); }
-    .chip { display: none; }
+    .stage, .m1, .m2, .cal, .con, .bub .in > *, .ana, .cal li, .cal li.ev, .att { animation: none; }
+    .think, .ghost { display: none; }
   }
 </style>
