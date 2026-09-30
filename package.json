@@ -4,7 +4,9 @@
   "version": "0.0.0",
   "description": "Website, docs and draft schema for UIBubbles.",
   "packageManager": "pnpm@12.8.1",
-  "engines": { "node": ">=24" },
+  "engines": {
+    "node": ">=24"
+  },
   "scripts": {
     "dev": "pnpm --filter @uibubbles/site dev",
     "build": "pnpm --filter @uibubbles/site build",
@@ -14,6 +16,7 @@
   },
   "devDependencies": {
     "ajv": "^8.17.1",
-    "ajv-formats": "^3.0.1"
+    "ajv-formats": "^3.0.1",
+    "wrangler": "4.145.0"
   }
 }
