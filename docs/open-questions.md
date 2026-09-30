@@ -41,5 +41,5 @@ order: 6
 22. **Licensing.** Apache-2.0 for code and CC-BY-4.0 for documentation and spec is the provisional choice.
 23. **Governance** of a public standard. Undecided. Nothing will be claimed until it is decided.
 24. **Repository layout.** One repository (site, spec, runtime) for speed, or separate repositories?
-25. **When uibubbles.org goes public.** The domain registration is unconfirmed.
+25. **When uibubbles.org goes public.** The domain is on Cloudflare; the site is not deployed yet.
 26. **Signing and provenance at scale**, and cross-device pin state. Matter only at third-party scale.

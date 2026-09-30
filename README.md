@@ -34,7 +34,7 @@ pnpm verify:dist         # static sanity check of the built HTML (after build)
 ## Deployment
 
 `.github/workflows/deploy.yml` is manual (`workflow_dispatch`) and needs the
-`CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID` repository secrets. **They are not configured yet**, and no custom domain route is set because domain registration is unconfirmed.
+`CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID` repository secrets. **They are not configured yet.** The token needs Zone:DNS:Edit on `uibubbles.org` so the apex and `www` custom domains in `wrangler.jsonc` can attach.
 
 ## Licensing (provisional)
 
