@@ -1,6 +1,7 @@
 ---
-// Dependency-free illustration: a chat where a Calendar Bubble pops, then a Contacts Bubble,
-// and the two glue along a shared wall. Pure HTML and CSS keyframes, one 18s loop.
+// Dependency-free illustration: a chat where a small "thinking" bubble blows, then inflates into
+// a Calendar Bubble; the same for Contacts; then the two glue along a shared wall.
+// Pure HTML and CSS keyframes, one 18s loop.
 ---
 <figure class="demo">
   <div class="stage" aria-hidden="true">
@@ -9,6 +10,8 @@
       <div class="thread">
         <p class="msg m1">What's on tomorrow?</p>
         <div class="pair">
+          <div class="slot">
+          <span class="think t1"><span class="breath">thinking…</span></span>
           <div class="bub cal"><div class="in">
             <h4>Tomorrow</h4>
             <ul>
@@ -17,6 +20,9 @@
               <li><b>16:00</b> Dentist</li>
             </ul>
           </div></div>
+          </div>
+          <div class="slot">
+          <span class="think t2"><span class="breath">checking contacts…</span></span>
           <div class="bub con"><div class="in">
             <h4>Contacts</h4>
             <ul>
@@ -25,6 +31,7 @@
               <li class="pp"><span class="av c">M</span>Mira</li>
             </ul>
           </div></div>
+          </div>
           <span class="wall"></span>
           <span class="chip">event.selected</span>
         </div>
@@ -33,7 +40,7 @@
     </div>
   </div>
   <figcaption>
-    Illustration, not a live demo. A Calendar Bubble pops up, then a Contacts Bubble, and the two glue along a shared wall. Live demo coming.
+    Illustration, not a live demo. While the answer is being prepared a small bubble blows; when it is ready it inflates into a Calendar Bubble. The same happens for Contacts, and then the two glue along a shared wall. Live demo coming.
   </figcaption>
 </figure>
 
@@ -51,7 +58,21 @@
   .m2 { animation: m2 18s infinite both; }
 
   .pair { position: relative; display: grid; grid-template-columns: 1fr 1fr; gap: 14px; animation: close 18s infinite both; }
-  .bub { padding: 2px; background: var(--rim); border-radius: 22px; transform-origin: 50% 80%; }
+  .slot { position: relative; display: grid; }
+  .bub { padding: 2px; background: var(--rim); border-radius: 22px; transform-origin: 0% 100%; }
+  .cal .in > * { animation: fillCal 18s infinite both; }
+  .con .in > * { animation: fillCon 18s infinite both; }
+
+  /* "blowing": a small bubble that breathes, its soap-film rim swirling, until the answer is ready */
+  @property --swirl { syntax: "<angle>"; inherits: false; initial-value: 0deg; }
+  .think { position: absolute; left: 0; bottom: 0; z-index: 1; padding: 2px; border-radius: 999px;
+    background: conic-gradient(from var(--swirl), var(--film-a), var(--film-b), var(--film-c), var(--film-d), var(--film-a));
+    transform-origin: 0% 100%; pointer-events: none; }
+  .breath { display: block; padding: 0.35rem 0.8rem; border-radius: 999px; background: var(--surface);
+    font-family: var(--font-mono); font-size: 0.7rem; color: var(--ink-2); white-space: nowrap;
+    transform-origin: 0% 100%; animation: breathe 1.5s ease-in-out infinite; }
+  .t1 { animation: think1 18s infinite both, swirl 2.4s linear infinite; }
+  .t2 { animation: think2 18s infinite both, swirl 2.4s linear infinite; }
   .bub .in { background: var(--surface); border-radius: 20px; padding: 0.7rem 0.75rem; height: 100%; min-height: 10.2rem; }
   .bub h4 { margin: 0 0 0.45rem; font-family: var(--font-display); font-size: 0.95rem; }
   .bub ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.25rem; }
@@ -70,8 +91,15 @@
   @keyframes stage { 0% { opacity: 0; } 2% { opacity: 1; } 96% { opacity: 1; } 99%, 100% { opacity: 0; } }
   @keyframes m1 { 0%, 3% { opacity: 0; transform: translateY(8px); } 6%, 100% { opacity: 1; transform: none; } }
   @keyframes m2 { 0%, 31% { opacity: 0; transform: translateY(8px); } 34%, 100% { opacity: 1; transform: none; } }
-  @keyframes popCal { 0%, 9% { opacity: 0; transform: scale(0.4); } 13% { opacity: 1; transform: scale(1.07); } 16%, 100% { opacity: 1; transform: scale(1); } }
-  @keyframes popCon { 0%, 40% { opacity: 0; transform: scale(0.4); } 44% { opacity: 1; transform: scale(1.07); } 47%, 100% { opacity: 1; transform: scale(1); } }
+  @keyframes breathe { 0%, 100% { transform: scale(1); } 45% { transform: scale(1.06, 1.1); } 70% { transform: scale(1.03, 0.98); } }
+  @keyframes swirl { to { --swirl: 360deg; } }
+  @keyframes think1 { 0%, 6% { opacity: 0; transform: scale(0.3); } 8% { opacity: 1; transform: scale(1.08); } 9%, 13.5% { opacity: 1; transform: scale(1); } 15%, 100% { opacity: 0; transform: scale(1.9); } }
+  @keyframes think2 { 0%, 34% { opacity: 0; transform: scale(0.3); } 36% { opacity: 1; transform: scale(1.08); } 37%, 41.5% { opacity: 1; transform: scale(1); } 43%, 100% { opacity: 0; transform: scale(1.9); } }
+  /* "inflated": grows from where the small bubble sat, springs, then the content fades in */
+  @keyframes popCal { 0%, 13.5% { opacity: 0; transform: scale(0.14, 0.2); } 14% { opacity: 1; transform: scale(0.14, 0.2); } 16.5% { transform: scale(1.04); } 18%, 100% { opacity: 1; transform: scale(1); } }
+  @keyframes popCon { 0%, 41.5% { opacity: 0; transform: scale(0.14, 0.2); } 42% { opacity: 1; transform: scale(0.14, 0.2); } 44.5% { transform: scale(1.04); } 46%, 100% { opacity: 1; transform: scale(1); } }
+  @keyframes fillCal { 0%, 16.5% { opacity: 0; } 19%, 100% { opacity: 1; } }
+  @keyframes fillCon { 0%, 44.5% { opacity: 0; } 47%, 100% { opacity: 1; } }
   @keyframes close { 0%, 56% { gap: 14px; } 63%, 100% { gap: 0px; } }
   @keyframes calEdge { 0%, 56% { border-radius: 22px; } 63%, 100% { border-radius: 22px 6px 6px 22px; } }
   @keyframes conEdge { 0%, 56% { border-radius: 22px; } 63%, 100% { border-radius: 6px 22px 22px 6px; } }
@@ -87,7 +115,8 @@
     .cal li { display: block; }
   }
   @media (prefers-reduced-motion: reduce) {
-    .stage, .m1, .m2, .pair, .cal, .con, .ev, .ana, .wall, .chip { animation: none; }
+    .stage, .m1, .m2, .pair, .cal, .con, .ev, .ana, .wall, .chip, .bub .in > * { animation: none; }
+    .think { display: none; }
     .pair { gap: 0; }
     .cal { border-radius: 22px 6px 6px 22px; }
     .con { border-radius: 6px 22px 22px 6px; }

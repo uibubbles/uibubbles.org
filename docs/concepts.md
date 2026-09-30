@@ -68,3 +68,20 @@ snap together and incompatible ones do not. Only declared events cross.
 
 Instance lifecycle is distinct from resource lifecycle: popping a Calendar Bubble
 does not delete the event it showed.
+
+## Instance states (draft)
+
+Like blowing a real soap bubble:
+
+| State | Meaning | What the host shows |
+|---|---|---|
+| **blowing** | The instance exists; the extension is loading or the answer is not ready yet. | A small bubble right away, breathing, with an optional one-line status ("thinking…", "checking your calendar…"). It may swell a little as partial results stream in. |
+| **inflated** | The Bubble has reported that it is ready, with its preferred size. | The small bubble grows into the final size and shape, with a short spring. Content fades in once it has settled. |
+| **popped** | Dismissed, cancelled or failed. | A burst, replaced by a line of text when there was an error. |
+
+Two reasons this is more than decoration: the **blowing** phase covers the real
+cold-start time of a Worker Bubble (booting its extension's sandbox and worker),
+and growing to the reported size is the size handshake between host and Bubble,
+made visible instead of appearing as a layout jump. With
+`prefers-reduced-motion`, the small bubble stays still and the Bubble
+cross-fades in.
