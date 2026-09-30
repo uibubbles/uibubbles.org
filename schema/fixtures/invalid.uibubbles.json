@@ -1,0 +1,9 @@
+{
+  "uibubbles": "0.1-draft",
+  "id": "http://not-https.example.com",
+  "name": "",
+  "version": "one",
+  "modes": ["iframe-per-bubble"],
+  "uses": { "Contacts": { "id": "https://contacts.example.com/" } },
+  "permissions": ["everything"]
+}

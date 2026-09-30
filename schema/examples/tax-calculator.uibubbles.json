@@ -1,0 +1,20 @@
+{
+  "$schema": "https://uibubbles.org/schema/0.1-draft/manifest.json",
+  "uibubbles": "0.1-draft",
+  "id": "https://tax-calculator.example.com/",
+  "name": "Tax calculator",
+  "version": "0.4.1",
+  "description": "Fictional third-party example. Runs as code in a Worker and asks the user to pick contacts to share a result with.",
+  "entry": {
+    "url": "https://tax-calculator.example.com/bubble.js",
+    "integrity": "sha256-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
+  },
+  "modes": ["worker"],
+  "uses": {
+    "contacts": { "id": "https://contacts.example.com/", "version": "^1" }
+  },
+  "emits": ["taxResult.ready"],
+  "accepts": [],
+  "network": { "domains": ["rates.example.com"] },
+  "permissions": ["context.theme", "context.timezone", "context.locale"]
+}
