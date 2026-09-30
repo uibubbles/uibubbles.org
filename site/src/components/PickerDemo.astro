@@ -1,0 +1,260 @@
+---
+// Interactive simulation of an interactive call: a Tax calculator Bubble asks the host for a
+// Contacts picker. The user ticks people; the caller receives only those people and only the
+// declared fields. Simulation of the draft model, not the real runtime.
+const people = [
+  { id: "ana", name: "Ana", email: "ana@example.com" },
+  { id: "ben", name: "Ben", email: "ben@example.com" },
+  { id: "mira", name: "Mira", email: "mira@example.com" },
+  { id: "omar", name: "Omar", email: "omar@example.com" },
+  { id: "zoe", name: "Zoe", email: "zoe@example.com" },
+];
+const tints = ["--film-a", "--film-d", "--film-c", "--film-b", "--film-a"];
+---
+<section class="picker" aria-labelledby="picker-title" data-picker data-state="idle">
+  <span class="snippet-label">Simulation of the draft model, not the real runtime</span>
+  <h3 id="picker-title" class="sr-only">Try it: a tax calculator asks the host for a contacts picker</h3>
+
+  <div class="grid">
+    <div class="host surface-dark">
+      <div class="host-bar" aria-hidden="true"><i></i><i></i><i></i><span>A host surface</span></div>
+      <div class="stage" data-stage>
+        <div class="bub calc" data-calc><div class="in">
+          <h4>Tax calculator</h4>
+          <p class="big"><span class="cap">Refund estimate</span><span class="fig">€1,240</span></p>
+          <dl class="lines">
+            <div><dt>Tax paid this year</dt><dd>€6,820</dd></div>
+            <div><dt>Tax due</dt><dd>€5,580</dd></div>
+            <div class="sum"><dt>Refund</dt><dd>€1,240</dd></div>
+          </dl>
+          <p class="shared" data-shared hidden></p>
+          <button type="button" class="act" data-open>Share with people…</button>
+        </div></div>
+
+        <div class="pick" data-pick role="dialog" aria-modal="true" aria-labelledby="pick-h" aria-describedby="pick-ask" inert>
+          <p class="ask" id="pick-ask"><span class="host-tag">Host</span>Tax calculator wants to pick 1–5 contacts · name, email</p>
+          <div class="bub picker-b" data-bubble><div class="in">
+            <h4 id="pick-h">Contacts</h4>
+            <ul class="people">
+              {people.map((p, i) => (
+                <li>
+                  <label>
+                    <input type="checkbox" value={p.id} data-name={p.name} data-email={p.email} />
+                    <span class="av" style={`background:var(${tints[i]})`} aria-hidden="true">{p.name[0]}</span>
+                    <span class="who"><b>{p.name}</b><small>{p.email}</small></span>
+                  </label>
+                </li>
+              ))}
+            </ul>
+            <div class="row-btns">
+              <span class="count" data-count aria-hidden="true">0 of 5 picked</span>
+              <button type="button" class="act quiet" data-cancel>Cancel</button>
+              <button type="button" class="act solid" data-done disabled>Done</button>
+            </div>
+          </div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="recv surface-dark">
+      <h4>What the calculator received</h4>
+      <pre data-json tabindex="0"><code>Nothing yet. The calculator has not asked.</code></pre>
+      <p class="not" data-not hidden>Not received: <s>phone</s> <s>address</s> <s data-others></s></p>
+      <button type="button" class="reset" data-reset hidden>Reset</button>
+    </div>
+  </div>
+  <p class="sr-only" aria-live="polite" data-live></p>
+</section>
+
+<script>
+  import { burst, reducedMotion } from "../scripts/pop";
+
+  for (const root of document.querySelectorAll<HTMLElement>("[data-picker]")) {
+    const q = <T extends HTMLElement>(s: string) => root.querySelector<T>(s)!;
+    const stage = q("[data-stage]"), pick = q("[data-pick]"), bubble = q("[data-bubble]");
+    const openBtn = q<HTMLButtonElement>("[data-open]"), cancelBtn = q<HTMLButtonElement>("[data-cancel]");
+    const doneBtn = q<HTMLButtonElement>("[data-done]"), resetBtn = q<HTMLButtonElement>("[data-reset]");
+    const json = q("[data-json] code"), notEl = q("[data-not]"), others = q("[data-others]");
+    const shared = q("[data-shared]"), live = q("[data-live]"), count = q("[data-count]");
+    const boxes = [...root.querySelectorAll<HTMLInputElement>("input[type=checkbox]")];
+    const MAX = 5;
+    const set = (s: string) => { root.dataset.state = s; };
+    const say = (t: string) => { live.textContent = ""; requestAnimationFrame(() => { live.textContent = t; }); };
+    const join = (a: string[]) => a.length < 2 ? a.join("") : a.slice(0, -1).join(", ") + " and " + a[a.length - 1];
+
+    const refresh = () => {
+      const n = boxes.filter((b) => b.checked).length;
+      doneBtn.disabled = n < 1;
+      for (const b of boxes) b.disabled = !b.checked && n >= MAX;
+      count.textContent = `${n} of ${MAX} picked`;
+    };
+    for (const b of boxes) b.addEventListener("change", refresh);
+
+    const open = () => {
+      for (const b of boxes) b.checked = false;
+      refresh();
+      set("picking");
+      pick.removeAttribute("inert");
+      pick.removeAttribute("data-closing");
+      pick.setAttribute("data-open", "");
+      q("[data-calc]").setAttribute("inert", "");
+      boxes[0].focus({ preventScroll: true });
+      say("Contacts picker opened. Tax calculator wants 1 to 5 contacts, name and email only.");
+    };
+
+    // popping the picker: a short squash, a droplet burst, then it is gone
+    const close = (after: () => void) => {
+      const r = bubble.getBoundingClientRect(), s = stage.getBoundingClientRect();
+      burst(stage, r.left - s.left + r.width / 2, r.top - s.top + r.height / 2, Math.min(r.width, 220), 14);
+      pick.setAttribute("data-closing", "");
+      pick.setAttribute("inert", "");
+      q("[data-calc]").removeAttribute("inert");
+      setTimeout(() => { pick.removeAttribute("data-open"); pick.removeAttribute("data-closing"); after(); }, reducedMotion() ? 120 : 260);
+    };
+
+    const done = () => {
+      const chosen = boxes.filter((b) => b.checked);
+      if (!chosen.length) return;
+      const names = chosen.map((b) => b.dataset.name!);
+      const rest = boxes.length - chosen.length;
+      close(() => {
+        set("done");
+        shared.hidden = false;
+        shared.replaceChildren("Shared with ", ...chosen.flatMap((b, i) => {
+          const chip = document.createElement("span");
+          chip.className = "chip";
+          chip.textContent = b.dataset.name!;
+          return i ? [" ", chip] : [chip];
+        }));
+        json.textContent = JSON.stringify({ picked: chosen.map((b) => ({ name: b.dataset.name, email: b.dataset.email })) }, null, 2);
+        others.textContent = rest ? `the other ${rest} contact${rest > 1 ? "s" : ""}` : "";
+        others.hidden = !rest;
+        notEl.hidden = false;
+        resetBtn.hidden = false;
+        openBtn.textContent = "Share with other people…";
+        openBtn.focus({ preventScroll: true });
+        say(`Shared with ${join(names)}. The calculator received only name and email for ${chosen.length} ${chosen.length > 1 ? "people" : "person"}. It did not receive phone, address${rest ? `, or the other ${rest} contact${rest > 1 ? "s" : ""}` : ""}.`);
+      });
+    };
+
+    const cancel = () => close(() => {
+      set("cancelled");
+      shared.hidden = true;
+      json.textContent = "// The user cancelled.\n// The calculator received nothing.";
+      others.textContent = "all 5 contacts";
+      others.hidden = false;
+      notEl.hidden = false;
+      resetBtn.hidden = false;
+      openBtn.textContent = "Share with people…";
+      openBtn.focus({ preventScroll: true });
+      say("Picker cancelled. The calculator received nothing.");
+    });
+
+    const reset = () => {
+      set("idle");
+      shared.hidden = true;
+      json.textContent = "Nothing yet. The calculator has not asked.";
+      notEl.hidden = true;
+      resetBtn.hidden = true;
+      openBtn.textContent = "Share with people…";
+      openBtn.focus({ preventScroll: true });
+      say("Demo reset.");
+    };
+
+    openBtn.addEventListener("click", open);
+    cancelBtn.addEventListener("click", cancel);
+    doneBtn.addEventListener("click", done);
+    resetBtn.addEventListener("click", reset);
+    pick.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") { e.preventDefault(); cancel(); return; }
+      if (e.key !== "Tab") return;
+      const f = [...pick.querySelectorAll<HTMLElement>("input,button")].filter((el) => !(el as HTMLInputElement).disabled);
+      const first = f[0], last = f[f.length - 1];
+      if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+      else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+    });
+  }
+</script>
+
+<style>
+  .picker { margin: 1.6rem 0; container-type: inline-size; }
+  .grid { display: grid; gap: 1rem; grid-template-columns: minmax(0, 1fr); align-items: start; }
+  @container (min-width: 600px) { .grid { grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr); } }
+
+  .host { background: var(--surface); border: 1px solid var(--line); border-radius: 26px; padding: 0.8rem 0.9rem 1rem; }
+  .host-bar { display: flex; align-items: center; gap: 0.35rem; font-size: 0.75rem; color: var(--ink-2); padding: 0 0.2rem 0.7rem; }
+  .host-bar i { width: 9px; height: 9px; border-radius: 50%; background: var(--line); }
+  .host-bar span { margin-left: 0.5rem; }
+
+  .stage { position: relative; display: grid; font-size: 0.88rem; }
+  .calc, .pick { grid-area: 1 / 1; min-width: 0; }
+  .bub { padding: 2px; background: var(--rim); border-radius: 22px; }
+  .bub .in { background: var(--surface); border-radius: 20px; padding: 0.8rem 0.9rem; height: 100%; }
+  .bub h4 { margin: 0 0 0.5rem; font-family: var(--font-display); font-size: 1rem; }
+
+  .calc { transition: opacity 0.25s, filter 0.25s; }
+  [data-state="picking"] .calc { opacity: 0.3; filter: saturate(0.4); }
+  .big { margin: 0 0 0.6rem; display: grid; }
+  .big .cap { color: var(--ink-2); font-size: 0.8rem; }
+  .big .fig { font-family: var(--font-display); font-weight: 700; font-size: 2.2rem; letter-spacing: -0.03em; line-height: 1.1; color: var(--lagoon); }
+  .lines { margin: 0 0 0.8rem; display: grid; gap: 0.15rem; font-size: 0.82rem; }
+  .lines div { display: flex; justify-content: space-between; gap: 1rem; padding: 0.2rem 0; border-bottom: 1px dashed var(--line); }
+  .lines dt { color: var(--ink-2); } .lines dd { margin: 0; font-variant-numeric: tabular-nums; }
+  .lines .sum { border-bottom: 0; font-weight: 600; } .lines .sum dt { color: var(--ink); }
+  .shared { margin: 0 0 0.7rem; font-size: 0.82rem; color: var(--ink-2); display: flex; flex-wrap: wrap; gap: 0.3rem; align-items: center; max-width: none; }
+  .shared :global(.chip) { display: inline-block; padding: 0.1rem 0.6rem; border-radius: 999px; background: var(--lagoon-soft); color: var(--ink); font-weight: 600; animation: chipin 0.35s cubic-bezier(.2,1.5,.4,1) both; }
+
+  .act { font: inherit; font-size: 0.88rem; font-weight: 600; min-height: 44px; padding: 0 1.1rem; border-radius: 999px; border: 2px solid var(--ink); background: transparent; color: var(--ink); cursor: pointer; }
+  .act:hover:not(:disabled) { transform: translateY(-1px); }
+  .act.solid { background: var(--ink); color: var(--paper); }
+  .act.quiet { border-color: var(--line); }
+  .act:disabled { opacity: 0.4; cursor: not-allowed; }
+
+  /* the picker Bubble: host-owned label strip above, the callee's Bubble inflates below it */
+  .pick { align-self: end; display: grid; gap: 0.5rem; visibility: hidden; pointer-events: none; z-index: 2; }
+  .pick[data-open] { visibility: visible; pointer-events: auto; }
+  .ask { margin: 0; max-width: none; font-size: 0.78rem; line-height: 1.35; padding: 0.4rem 0.7rem; border-radius: 12px; background: var(--lagoon-soft); color: var(--ink); opacity: 0; transition: opacity 0.2s 0.1s; }
+  .pick[data-open] .ask { opacity: 1; }
+  .host-tag { display: inline-block; margin-right: 0.5rem; padding: 0 0.45rem; border-radius: 6px; background: var(--ink); color: var(--paper); font-weight: 600; font-size: 0.7rem; }
+  .picker-b { transform-origin: 14% 100%; box-shadow: 0 18px 40px -16px rgb(0 0 0 / 0.5); }
+  .pick[data-open] .picker-b { animation: inflate 0.6s both; }
+  .pick[data-closing] .picker-b { animation: popout 0.26s ease-in both; }
+  .pick[data-closing] .ask { opacity: 0; transition-delay: 0s; }
+
+  .people { list-style: none; margin: 0 0 0.7rem; padding: 0; display: grid; gap: 0.1rem; }
+  .people label { display: grid; grid-template-columns: auto auto minmax(0, 1fr); gap: 0.6rem; align-items: center; min-height: 44px; padding: 0 0.4rem; border-radius: 12px; cursor: pointer; }
+  .people label:hover, .people label:has(:checked) { background: var(--lagoon-soft); }
+  .people label:has(:focus-visible) { outline: 3px solid var(--lagoon); outline-offset: 1px; }
+  .people input { width: 1.2rem; height: 1.2rem; margin: 0; accent-color: var(--lagoon); }
+  .people input:focus-visible { outline: none; }
+  .av { width: 1.7rem; height: 1.7rem; border-radius: 50%; display: grid; place-items: center; font-size: 0.78rem; font-weight: 700; color: #12283a; }
+  .who { display: grid; line-height: 1.2; min-width: 0; }
+  .who small { color: var(--ink-2); font-size: 0.72rem; overflow-wrap: anywhere; }
+  .row-btns { display: flex; align-items: center; justify-content: flex-end; gap: 0.5rem; flex-wrap: wrap; }
+  .count { margin-right: auto; font-size: 0.75rem; color: var(--ink-2); }
+
+  .recv { background: var(--surface); border: 1px solid var(--line); border-radius: 26px; padding: 1rem 1rem 0.9rem; min-width: 0; }
+  .recv h4 { margin: 0 0 0.6rem; font-family: var(--font-display); font-size: 1rem; }
+  .recv pre { margin: 0; min-height: 7.5rem; font-size: 0.8rem; white-space: pre-wrap; overflow-wrap: anywhere; }
+  .not { margin: 0.7rem 0 0; font-size: 0.8rem; color: var(--ink-2); max-width: none; }
+  .not s { opacity: 0.75; text-decoration-thickness: 1.5px; margin-right: 0.4rem; }
+  .not s[hidden] { display: none; }
+  .reset { margin-top: 0.6rem; font: inherit; font-size: 0.85rem; color: var(--lagoon); background: none; border: 0; padding: 0.6rem 0; min-height: 44px; cursor: pointer; text-decoration: underline; text-underline-offset: 0.18em; }
+
+  @keyframes inflate {
+    0% { transform: scale(0.1, 0.16); opacity: 0; }
+    12% { opacity: 1; }
+    62% { transform: scale(1.05, 1.04); }
+    82% { transform: scale(0.99); }
+    100% { transform: none; opacity: 1; }
+  }
+  @keyframes popout { 0% { transform: none; opacity: 1; } 35% { transform: scale(1.07); opacity: 1; } 100% { transform: scale(1.18); opacity: 0; } }
+  @keyframes chipin { from { transform: scale(0.3); opacity: 0; } }
+
+  @media (prefers-reduced-motion: reduce) {
+    .pick[data-open] .picker-b, .shared :global(.chip) { animation: none; }
+    .pick[data-closing] .picker-b { animation: none; opacity: 0; transition: opacity 0.12s; }
+    .act:hover:not(:disabled) { transform: none; }
+    .calc, .ask { transition: none; }
+  }
+</style>
