@@ -109,8 +109,8 @@ pre code { background: none; padding: 0; overflow-wrap: normal; }
 .btn-row { display: flex; flex-wrap: wrap; gap: 0.8rem; margin-top: 1.6rem; }
 
 /* hero */
-.hero { padding: clamp(2.5rem, 7vw, 5.5rem) 0 clamp(2rem, 5vw, 4rem); }
-.hero .wrap { display: grid; grid-template-columns: minmax(0, 1fr); gap: 2.5rem; align-items: center; }
+.hero { position: relative; overflow: clip; padding: clamp(2.5rem, 7vw, 5.5rem) 0 clamp(2rem, 5vw, 4rem); }
+.hero .wrap { position: relative; z-index: 1; display: grid; grid-template-columns: minmax(0, 1fr); gap: 2.5rem; align-items: center; }
 @media (min-width: 900px) { .hero .wrap { grid-template-columns: 1.05fr 0.95fr; gap: 3.5rem; } }
 .hero h1 { max-width: 11ch; }
 .hero .sub { font-size: var(--step-1); color: var(--ink-2); max-width: 30ch; line-height: 1.4; }
@@ -139,12 +139,6 @@ pre code { background: none; padding: 0; overflow-wrap: normal; }
 /* security */
 .principles { display: grid; gap: 0.8rem; margin: 0 0 2rem; }
 .principle { font-family: var(--font-display); font-size: clamp(1.4rem, 3vw, 1.9rem); line-height: 1.2; letter-spacing: -0.02em; margin: 0; max-width: 24ch; font-weight: 500; }
-.grants { border-radius: 22px; padding: 2px; background: var(--rim); }
-.grants > div { background: var(--surface); border-radius: 20px; padding: 1.2rem 1.3rem; }
-.grants h3 { font-size: 1rem; margin-bottom: 0.7rem; }
-.grants ul { list-style: none; margin: 0; padding: 0; font-family: var(--font-mono); font-size: 0.9rem; display: grid; gap: 0.35rem; }
-.grants li { display: grid; grid-template-columns: 1.4em 1fr; }
-.g-ok { color: var(--ok); } .g-ask { color: var(--ask); } .g-no { color: var(--no); }
 .flow { list-style: none; padding: 0; margin: 2rem 0 0; display: grid; gap: 0.6rem; }
 .flow li { display: grid; grid-template-columns: 1.6rem 1fr; gap: 0.7rem; align-items: start; }
 .flow li::before { content: ""; width: 14px; height: 14px; margin-top: 0.4em; border-radius: 50%; border: 2.5px solid var(--lagoon); background: var(--surface); }
@@ -192,3 +186,9 @@ th { font-family: var(--font-display); font-size: 0.95rem; }
 .theme-toggle .moon { display: none; }
 :root[data-theme="dark"] .theme-toggle .sun { display: none; }
 :root[data-theme="dark"] .theme-toggle .moon { display: block; }
+/* narrow phones: brand, three links and the theme toggle must fit without overflow */
+@media (max-width: 420px) {
+  .bar { gap: 0.6rem; }
+  .site-header nav { gap: 0.75rem; }
+  .theme-toggle { margin-left: 0; width: 2rem; height: 2rem; }
+}
