@@ -1,0 +1,197 @@
+---
+import Base from "../layouts/Base.astro";
+import HeroDemo from "../components/HeroDemo.astro";
+import ModeMark from "../components/ModeMark.astro";
+
+const usesSnippet = `// In the caller's manifest: a local alias, like an import map
+"uses": {
+  "contacts": { "id": "https://contacts.example.com/", "version": "^1" }
+}
+
+// In the caller's code
+const picked = await uib.ext("contacts").choose({
+  min: 1, max: 5, fields: ["name", "email"],
+});
+// picked holds only what the user ticked, only those fields`;
+
+const foamSnippet = `{
+  "foam": "Family week",
+  "members": ["calendar", "to-buy", "contacts"],
+  "walls": [
+    { "between": ["calendar", "contacts"], "events": ["event.selected", "contact.selected"] }
+  ]
+}`;
+---
+<Base>
+  <section class="hero">
+    <div class="wrap">
+      <div>
+        <span class="badge">Early draft</span>
+        <h1>UI that pops up when you need it.</h1>
+        <p class="sub">An open, secure-by-design standard for isolated, pluggable interactive UI.</p>
+        <div class="btn-row">
+          <a class="btn primary" href="/docs/vision/">Read the draft docs</a>
+          <a class="btn" href="https://github.com/uibubbles/uibubbles.org" rel="noopener">View on GitHub</a>
+        </div>
+      </div>
+      <HeroDemo />
+    </div>
+  </section>
+
+  <section class="section" id="what">
+    <div class="wrap">
+      <div class="head">
+        <h2>What is a Bubble?</h2>
+        <p>One UI instance of an extension, shown inside a host surface.</p>
+      </div>
+      <div>
+        <p class="lead">The host decides where a Bubble appears. The extension decides what is inside it. Neither has to know how the other is built.</p>
+        <dl class="facts">
+          <div><dt>Isolated</dt><dd>Each extension runs apart from the host and from other extensions. It sees only what the user hands it.</dd></div>
+          <div><dt>Independent</dt><dd>A host does not need to ship a calendar to show one. An extension supplies it, and the host brokers every call.</dd></div>
+          <div><dt>Not only chat, not only AI</dt><dd>Chat is the first surface. A dashboard, an IDE sidebar or a terminal can host Bubbles too, and an assistant, a button or plain code can pop one.</dd></div>
+        </dl>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="modes">
+    <div class="wrap">
+      <div class="head">
+        <h2>Three ways to render</h2>
+        <p>A mode says how a Bubble draws itself. It never implies a permission.</p>
+      </div>
+      <div class="modes">
+        <div class="mode">
+          <ModeMark mode="declarative" />
+          <div>
+            <h3>Declarative</h3>
+            <p>Data only. The host renders an HTML subset itself, so no code from the extension runs. It is also the fallback for text and terminal hosts.</p>
+            <p class="tradeoff"><b>Trade-off:</b> safest by construction, limited to what the subset can express.</p>
+          </div>
+        </div>
+        <div class="mode">
+          <ModeMark mode="worker" />
+          <div>
+            <h3>Worker</h3>
+            <p>Third-party code. One hidden sandboxed iframe per extension, one Web Worker per Bubble. The Bubble's DOM is mirrored into a Shadow DOM in the host through an allowlist sanitizer, with CSS containment.</p>
+            <p class="tradeoff"><b>Trade-off:</b> light, themable and accessible, but weaker isolation than an iframe per Bubble. A sanitizer bug means code runs on the host's origin.</p>
+          </div>
+        </div>
+        <div class="mode">
+          <ModeMark mode="frame" />
+          <div>
+            <h3>Frame</h3>
+            <p>A visible iframe, for full existing web apps. Optional in the spec.</p>
+            <p class="tradeoff"><b>Trade-off:</b> the strongest boundary, but each Bubble boots a whole document, sizing inside a chat is fiddly and gluing is awkward.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="calls">
+    <div class="wrap">
+      <div class="head">
+        <h2>Extensions call each other</h2>
+        <p>Through the host, by id. Not through a fixed list of platform APIs.</p>
+      </div>
+      <div>
+        <p class="lead">A tax calculator wants to share a result with people. It asks for a contacts picker, and the user chooses.</p>
+        <span class="snippet-label">Draft syntax, will change</span>
+        <pre><code>{usesSnippet}</code></pre>
+        <p><strong>Interactive calls</strong> open the callee's Bubble on top of the caller, labelled with who is asking. They must start from a user gesture, and the caller gets only what was picked. <strong>Headless calls</strong> return data without UI, so the host checks a grant first.</p>
+        <p class="small">An extension's id is any https directory URL that contains <code>uibubbles.json</code>. DNS is the registry. <a href="/docs/extension-ids/">Read how ids work</a>.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="glue">
+    <div class="wrap">
+      <div class="head">
+        <h2>Glue and foam</h2>
+        <p>Bubbles that touch can share a wall.</p>
+      </div>
+      <div>
+        <p class="lead">Two touching Bubbles form a wall that the host owns. Only events both sides declared can cross it: selecting a meeting can highlight its attendees, and picking a person can filter the calendar.</p>
+        <p>A cluster of glued Bubbles is called <strong>foam</strong>. Foam is plain data, so it can be pinned or shared as a small app without anyone writing code. You can unglue it, and popping one Bubble leaves the rest.</p>
+        <span class="snippet-label">Draft syntax, will change</span>
+        <pre><code>{foamSnippet}</code></pre>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="security">
+    <div class="wrap">
+      <div class="head">
+        <h2>Security first</h2>
+        <p>The design starts from what a Bubble must not be able to do.</p>
+      </div>
+      <div>
+        <div class="principles">
+          <p class="principle">A Bubble declares what it wants. The Host decides what it gets.</p>
+          <p class="principle">The user's gesture is the grant.</p>
+        </div>
+        <div class="grants">
+          <div>
+            <h3>What the host decided for one Bubble</h3>
+            <ul>
+              <li><span class="g-ok" aria-hidden="true">✓</span><span><span class="sr-only">Granted: </span>theme</span></li>
+              <li><span class="g-ok" aria-hidden="true">✓</span><span><span class="sr-only">Granted: </span>timezone</span></li>
+              <li><span class="g-ask" aria-hidden="true">?</span><span><span class="sr-only">Asks the user each time: </span>contacts (via picker)</span></li>
+              <li><span class="g-no" aria-hidden="true">✗</span><span><span class="sr-only">Denied: </span>unrestricted network</span></li>
+            </ul>
+          </div>
+        </div>
+        <ol class="flow">
+          <li>The Bubble's manifest lists what it asks for. Asking is not getting.</li>
+          <li>The host evaluates the request.</li>
+          <li>The user's gesture, such as picking a contact, or a policy grants a slice.</li>
+          <li>The Bubble receives only that slice.</li>
+        </ol>
+        <div class="note">
+          <p><strong>Honest limit.</strong> Worker mode renders into the host's own DOM, which is weaker isolation than one iframe per Bubble. The sanitizer is the security-critical part and needs adversarial tests and outside review before any third-party extension ships. Nothing here is implemented or audited yet. <a href="/docs/security/">Read the threat model sketch</a>.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="compare">
+    <div class="wrap">
+      <div class="head">
+        <h2>How it compares</h2>
+        <p>UIBubbles aims to use existing work, not replace it.</p>
+      </div>
+      <div class="table-scroll">
+        <table class="compare">
+          <thead><tr><th scope="col">Project</th><th scope="col">What it does well</th><th scope="col">What UIBubbles adds</th></tr></thead>
+          <tbody>
+            <tr><th scope="row"><a href="https://modelcontextprotocol.io/" rel="noopener">MCP Apps</a></th><td>A tool result renders as a sandboxed iframe with host context.</td><td>Calls between apps and gluing. An app can use the host's and other extensions' UI.</td></tr>
+            <tr><th scope="row"><a href="https://github.com/google/A2UI" rel="noopener">A2UI</a> and <a href="https://github.com/thesysdev/openui" rel="noopener">OpenUI</a></th><td>Safe declarative UI that an agent generates.</td><td>Third-party code and extension-to-extension calls. Their formats may inform Declarative mode.</td></tr>
+            <tr><th scope="row">Facebook and VK style apps</th><td>Apps call platform APIs, including user pickers.</td><td>APIs supplied by other extensions instead of one platform, and lighter Bubbles than one heavy iframe per app.</td></tr>
+            <tr><th scope="row"><a href="https://github.com/Shopify/remote-dom" rel="noopener">Shopify remote-dom</a>, <a href="https://github.com/ampproject/worker-dom" rel="noopener">AMP worker-dom</a></th><td>Isolated code whose UI is mirrored into the host.</td><td>The rendering technique UIBubbles reuses. No calls or gluing there.</td></tr>
+          </tbody>
+        </table>
+        <p class="small" style="margin-top:1rem">More in <a href="/docs/prior-art/">prior art</a>.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="status">
+    <div class="wrap">
+      <div class="head">
+        <h2>Status and how to help</h2>
+        <p>Early draft. Governance is undecided.</p>
+      </div>
+      <div>
+        <p class="lead">UIBubbles is a recorded idea with a draft manifest schema and draft docs. There is no released runtime. A first host is in development.</p>
+        <p>Who runs a public standard, and under what licence, has not been decided. Code is provisionally Apache-2.0 and documentation CC-BY-4.0.</p>
+        <p>The most useful things right now: try to break the <a href="/docs/security/">security model</a>, argue a position on an <a href="/docs/open-questions/">open question</a>, or tell us what you would build as an extension.</p>
+        <div class="btn-row">
+          <a class="btn primary" href="https://github.com/uibubbles/uibubbles.org" rel="noopener">GitHub repository</a>
+          <a class="btn" href="/docs/roadmap/">Roadmap</a>
+        </div>
+      </div>
+    </div>
+  </section>
+</Base>

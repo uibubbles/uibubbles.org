@@ -1,0 +1,74 @@
+---
+import "../styles/global.css";
+interface Props {
+  title?: string;
+  description?: string;
+}
+const { title, description = "UI that pops up when you need it. An open, secure-by-design standard for isolated, pluggable interactive UI. Early draft." } = Astro.props;
+const fullTitle = title ? `${title} – UIBubbles` : "UIBubbles – UI that pops up when you need it";
+const canonical = new URL(Astro.url.pathname, Astro.site);
+const path = Astro.url.pathname;
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+    <meta name="color-scheme" content="light dark" />
+    <link rel="canonical" href={canonical} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={description} />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Instrument+Sans:ital,wght@0,400;0,600;1,400&family=JetBrains+Mono:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <a class="skip" href="#main">Skip to content</a>
+    <header class="site-header">
+      <div class="wrap bar">
+        <a class="brand" href="/" aria-label="UIBubbles home">
+          <svg viewBox="0 0 64 64" width="30" height="30" aria-hidden="true"><use href="#mark" /></svg>
+          <span>UIBubbles</span>
+        </a>
+        <nav aria-label="Main">
+          <a href="/docs/" aria-current={path.startsWith("/docs") ? "page" : undefined}>Docs</a>
+          <a href="/about/" aria-current={path.startsWith("/about") ? "page" : undefined}>About</a>
+          <a href="https://github.com/uibubbles/uibubbles.org" rel="noopener">GitHub</a>
+        </nav>
+      </div>
+    </header>
+    <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+      <defs>
+        <linearGradient id="film" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stop-color="#6fd3e0" /><stop offset=".4" stop-color="#b9a6f5" />
+          <stop offset=".7" stop-color="#f4a6c8" /><stop offset="1" stop-color="#f7d58b" />
+        </linearGradient>
+        <g id="mark">
+          <circle cx="38" cy="30" r="22" fill="var(--bubble-fill, #e6f6f9)" stroke="url(#film)" stroke-width="4" />
+          <path d="M27 24a13 13 0 0 1 9-9" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round" />
+          <circle cx="14" cy="49" r="9" fill="var(--bubble-fill, #e6f6f9)" stroke="url(#film)" stroke-width="3.5" />
+        </g>
+      </defs>
+    </svg>
+    <main id="main"><slot /></main>
+    <footer class="site-footer">
+      <div class="wrap">
+        <p>
+          UIBubbles is an <strong>early draft</strong>. Nothing here is a finished standard, and governance is undecided.
+        </p>
+        <ul class="foot-links">
+          <li><a href="https://github.com/uibubbles/uibubbles.org" rel="noopener">GitHub</a></li>
+          <li><a href="/docs/">Docs</a></li>
+          <li><a href="/about/">About</a></li>
+        </ul>
+        <p class="small">Code Apache-2.0, documentation CC-BY-4.0. Licensing is provisional.</p>
+      </div>
+    </footer>
+  </body>
+</html>

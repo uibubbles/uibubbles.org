@@ -1,0 +1,135 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://uibubbles.org/schema/0.1-draft/manifest.json",
+  "title": "UIBubbles extension manifest (0.1-draft)",
+  "description": "DRAFT. Describes an extension: who it is, how its Bubbles render, what it provides and uses, which events cross a glue wall, and what it asks the host for. A Bubble declares what it wants; the Host decides what it gets.",
+  "type": "object",
+  "required": ["uibubbles", "id", "name", "version", "modes"],
+  "additionalProperties": false,
+  "properties": {
+    "$schema": { "type": "string" },
+    "uibubbles": {
+      "const": "0.1-draft",
+      "description": "Spec version this manifest is written against."
+    },
+    "id": { "$ref": "#/$defs/extensionId" },
+    "name": { "type": "string", "minLength": 1, "maxLength": 80 },
+    "version": { "$ref": "#/$defs/semver" },
+    "description": { "type": "string", "maxLength": 500 },
+    "entry": {
+      "type": "object",
+      "description": "Where the code loads from. Deliberately separate from the id, so moving to a CDN never changes identity.",
+      "required": ["url"],
+      "additionalProperties": false,
+      "properties": {
+        "url": { "type": "string", "format": "uri", "pattern": "^https://" },
+        "integrity": {
+          "type": "string",
+          "pattern": "^sha(256|384|512)-[A-Za-z0-9+/=]+$",
+          "description": "Subresource-integrity style hash of the entry file."
+        }
+      }
+    },
+    "modes": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": { "enum": ["declarative", "worker", "frame"] },
+      "description": "Rendering modes this extension supports. A mode implies no capability."
+    },
+    "provides": {
+      "type": "object",
+      "description": "Methods other extensions can call through the host, keyed by method name (dots allowed for nesting).",
+      "propertyNames": { "pattern": "^[a-z][a-zA-Z0-9]*(\\.[a-z][a-zA-Z0-9]*)*$" },
+      "additionalProperties": { "$ref": "#/$defs/method" }
+    },
+    "uses": {
+      "type": "object",
+      "description": "Local aliases for extensions this one calls, like an import map.",
+      "propertyNames": { "pattern": "^[a-z][a-z0-9-]*$" },
+      "additionalProperties": {
+        "type": "object",
+        "required": ["id", "version"],
+        "additionalProperties": false,
+        "properties": {
+          "id": { "$ref": "#/$defs/extensionId" },
+          "version": { "type": "string", "minLength": 1, "description": "Semver range, for example ^1." }
+        }
+      }
+    },
+    "emits": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": { "$ref": "#/$defs/eventName" },
+      "description": "Events this extension's Bubbles may send across a glue wall."
+    },
+    "accepts": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": { "$ref": "#/$defs/eventName" },
+      "description": "Events this extension's Bubbles can receive across a glue wall."
+    },
+    "network": {
+      "type": "object",
+      "description": "Declared network reach. Anything not listed is refused by the host.",
+      "additionalProperties": false,
+      "properties": {
+        "domains": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "type": "string", "pattern": "^([a-z0-9-]+\\.)+[a-z]{2,}$" }
+        }
+      }
+    },
+    "permissions": {
+      "type": "array",
+      "uniqueItems": true,
+      "description": "Requested, never granted by declaring. The host decides.",
+      "items": {
+        "enum": ["context.theme", "context.locale", "context.timezone", "context.size", "headless.calls", "storage.local"]
+      }
+    }
+  },
+  "$defs": {
+    "extensionId": {
+      "type": "string",
+      "format": "uri",
+      "pattern": "^https://[^/?#\\s]+(/[^?#\\s]*)?/$",
+      "description": "An https directory URL containing uibubbles.json. Trailing slash, no query or fragment."
+    },
+    "semver": {
+      "type": "string",
+      "pattern": "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)(-[0-9A-Za-z.-]+)?(\\+[0-9A-Za-z.-]+)?$"
+    },
+    "eventName": {
+      "type": "string",
+      "pattern": "^[a-z][a-zA-Z0-9]*(\\.[a-z][a-zA-Z0-9]*)+$",
+      "description": "Dotted name such as event.selected."
+    },
+    "method": {
+      "type": "object",
+      "required": ["kind"],
+      "additionalProperties": false,
+      "properties": {
+        "kind": {
+          "enum": ["interactive", "headless"],
+          "description": "interactive: opens a Bubble the user acts in; the gesture is the grant. headless: data call that needs a grant in advance."
+        },
+        "description": { "type": "string" },
+        "input": { "$ref": "#/$defs/schemaRef" },
+        "output": { "$ref": "#/$defs/schemaRef" }
+      }
+    },
+    "schemaRef": {
+      "description": "Inline JSON Schema object, or a reference such as a JSContact type.",
+      "oneOf": [
+        { "type": "object" },
+        {
+          "type": "object",
+          "required": ["$ref"],
+          "properties": { "$ref": { "type": "string" } }
+        }
+      ]
+    }
+  }
+}

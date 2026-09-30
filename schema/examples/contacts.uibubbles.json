@@ -1,0 +1,33 @@
+{
+  "$schema": "https://uibubbles.org/schema/0.1-draft/manifest.json",
+  "uibubbles": "0.1-draft",
+  "id": "https://contacts.example.com/",
+  "name": "Contacts",
+  "version": "1.2.0",
+  "description": "Fictional example. A contact list and picker.",
+  "entry": { "url": "https://cdn.example.com/contacts/1.2.0/main.js" },
+  "modes": ["declarative", "worker"],
+  "provides": {
+    "choose": {
+      "kind": "interactive",
+      "description": "Let the user pick contacts. The caller receives only the picked ones, only the requested fields.",
+      "input": {
+        "type": "object",
+        "properties": {
+          "min": { "type": "integer", "minimum": 0 },
+          "max": { "type": "integer", "minimum": 1 },
+          "fields": { "type": "array", "items": { "enum": ["name", "email", "phone"] } }
+        }
+      },
+      "output": { "type": "array", "items": { "$ref": "https://www.rfc-editor.org/rfc/rfc9553#Card" } }
+    },
+    "count": {
+      "kind": "headless",
+      "description": "How many contacts exist. Needs a grant.",
+      "output": { "type": "integer" }
+    }
+  },
+  "emits": ["contact.selected"],
+  "accepts": ["event.selected"],
+  "permissions": ["context.theme", "context.locale", "context.size"]
+}

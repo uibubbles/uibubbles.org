@@ -1,0 +1,14 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "uibubbles-org",
+  "compatibility_date": "2026-09-30",
+  "assets": {
+    "directory": "./site/dist",
+    "not_found_handling": "404-page"
+  },
+  // uibubbles.org is on Cloudflare (2026-09-30). Custom domains need a token with Zone:DNS:Edit.
+  "routes": [
+    { "pattern": "uibubbles.org", "custom_domain": true },
+    { "pattern": "www.uibubbles.org", "custom_domain": true }
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "name": "uibubbles-org",
+  "private": true,
+  "version": "0.0.0",
+  "description": "Website, docs and draft schema for UIBubbles.",
+  "packageManager": "pnpm@12.8.1",
+  "engines": { "node": ">=24" },
+  "scripts": {
+    "dev": "pnpm --filter @uibubbles/site dev",
+    "build": "pnpm --filter @uibubbles/site build",
+    "check": "pnpm --filter @uibubbles/site check && pnpm --filter @uibubbles/host check",
+    "validate:manifests": "node scripts/validate-manifests.mjs",
+    "verify:dist": "node scripts/verify-dist.mjs"
+  },
+  "devDependencies": {
+    "ajv": "^8.17.1",
+    "ajv-formats": "^3.0.1"
+  }
+}

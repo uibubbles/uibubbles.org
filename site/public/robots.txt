@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://uibubbles.org/sitemap-index.xml
