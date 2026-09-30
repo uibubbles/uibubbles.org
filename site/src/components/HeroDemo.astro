@@ -16,9 +16,9 @@
             <div class="bub cal"><div class="in">
               <h4>Tomorrow</h4>
               <ul>
-                <li><b>09:00</b> Stand-up</li>
-                <li class="ev"><b>12:30</b> Lunch <span class="att"><span class="av">A</span>Ana</span></li>
-                <li><b>16:00</b> Dentist</li>
+                <li><span class="t"><b>09:00</b> Stand-up</span></li>
+                <li class="ev"><span class="t"><b>12:30</b> Lunch</span> <span class="att"><span class="av">A</span>Ana</span></li>
+                <li><span class="t"><b>16:00</b> Dentist</span></li>
               </ul>
             </div></div>
           </div>
@@ -151,9 +151,7 @@
   @media (max-width: 420px) {
     .bub .in { padding: 0.55rem 0.5rem; }
     .thread { font-size: 0.8rem; }
-    .cal li { display: block; }
-    .cal li b { display: block; }
-    .att { margin: 0.2rem 0 0; }
+    .cal li .t b { display: block; }
   }
   @media (prefers-reduced-motion: reduce) {
     .stage, .m1, .m2, .cal, .con, .bub .in > *, .ana, .cal li, .cal li.ev, .att { animation: none; }
